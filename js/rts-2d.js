@@ -1,5 +1,5 @@
-function build_robot(){
-    if(money[0] < 100){
+function build_robot() {
+    if (money[0] < 100) {
         return;
     }
 
@@ -21,7 +21,40 @@ function build_robot(){
 }
 
 // TODO: Improve clarity.
-function draw(){
+function draw() {
+	// what to draw?
+    // Draw world static on screen
+    // Draw p1 building on screen
+    // Draw p0 building on screen
+    // Draw p1 unit on screen
+    // Draw p0 unit on screen
+    // Draw bullets.
+    // Draw fog.
+    // Draw building destination.
+    // Draw unit destination and range.
+    // Draw range circle.
+    // Draw selection box.
+    // Draw building while in build mode.
+    // Draw minimap frame.
+    // Draw player 0 money.
+    // Draw minimap background.
+    // Draw player 1 buildings on minimap.
+    // Draw player 0 buildings on minimap.
+    // Draw player 1 units on minimap.
+    // Draw player 0 units on minimap.
+    // Draw fog of war on minimap.
+    // Draw building destination on minimap.
+    // Draw unit destination and range on minimap.
+    // Draw range circle.
+    // Draw selection box on minimap.
+    // Draw camera boundaries on minimap.
+    // draw win/lose text if win/lose conditions met
+
+	draw_frame_count += 1;
+	if (debug_flag && draw_frame_count % 40 === 0) {
+		//console.log("frame count", draw_frame_count);
+	}
+
     buffer.clearRect(
       0,
       0,
@@ -37,13 +70,13 @@ function draw(){
     );
 
     var loop_counter = world_static.length - 1;
-    if(loop_counter >= 0){
-        do{
-            // If static world object is on screen, draw it.
-            if(world_static[loop_counter][0] + world_static[loop_counter][2] + offset_x <= 0
+    if (loop_counter >= 0) {
+        do {
+            // Draw world static on screen
+            if (world_static[loop_counter][0] + world_static[loop_counter][2] + offset_x <= 0
               || world_static[loop_counter][0] + offset_x >= width
               || world_static[loop_counter][1] + world_static[loop_counter][3] + offset_y <= 0
-              || world_static[loop_counter][1] + offset_y >= height){
+              || world_static[loop_counter][1] + offset_y >= height) {
                 continue;
             }
 
@@ -54,7 +87,7 @@ function draw(){
               world_static[loop_counter][2],
               world_static[loop_counter][3]
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     buffer.font = '42pt sans-serif';
@@ -62,13 +95,13 @@ function draw(){
     buffer.textAlign = 'center';
 
     loop_counter = p1_buildings.length - 1;
-    if(loop_counter >= 0){
-        do{
-            // If building is on screen, draw it.
-            if(p1_buildings[loop_counter][0] + p1_buildings[loop_counter][2] + offset_x <= 0
+    if (loop_counter >= 0) {
+        do {
+            // Draw p1 building on screen
+            if (p1_buildings[loop_counter][0] + p1_buildings[loop_counter][2] + offset_x <= 0
               || p1_buildings[loop_counter][0] + offset_x >= width
               || p1_buildings[loop_counter][1] + p1_buildings[loop_counter][3] + offset_y <= 0
-              || p1_buildings[loop_counter][1] + offset_y >= height){
+              || p1_buildings[loop_counter][1] + offset_y >= height) {
                 continue;
             }
 
@@ -97,18 +130,18 @@ function draw(){
               p1_buildings[loop_counter][0] + 50,
               p1_buildings[loop_counter][1] + 50
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     buffer.strokeStyle = '#ddd';
     loop_counter = p0_buildings.length - 1;
-    if(loop_counter >= 0){
-        do{
-            // If building is on screen, draw it.
-            if(p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] + offset_x <= 0
+    if (loop_counter >= 0) {
+        do {
+            // Draw p0 building on screen
+            if (p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] + offset_x <= 0
               || p0_buildings[loop_counter][0] + offset_x >= width
               || p0_buildings[loop_counter][1] + p0_buildings[loop_counter][3] + offset_y <= 0
-              || p0_buildings[loop_counter][1] + offset_y >= height){
+              || p0_buildings[loop_counter][1] + offset_y >= height) {
                 continue;
             }
 
@@ -139,17 +172,17 @@ function draw(){
               p0_buildings[loop_counter][0] + 50,
               p0_buildings[loop_counter][1] + 50
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     loop_counter = p1_units.length - 1;
-    if(loop_counter >= 0){
-        do{
-            // If unit is on screen, draw it.
-            if(p1_units[loop_counter][0] + 15 + x + camera_x <= 0
+    if (loop_counter >= 0) {
+        do {
+            // Draw p1 unit on screen
+            if (p1_units[loop_counter][0] + 15 + x + camera_x <= 0
               || p1_units[loop_counter][0] - 15 + x + camera_x >= width
               || p1_units[loop_counter][1] + 15 + y + camera_y <= 0
-              || p1_units[loop_counter][1] - 15 + y + camera_y >= height){
+              || p1_units[loop_counter][1] - 15 + y + camera_y >= height) {
                 continue;
             }
 
@@ -167,17 +200,17 @@ function draw(){
               30 * (p1_units[loop_counter][5] / 100),
               5
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     loop_counter = p0_units.length - 1;
-    if(loop_counter >= 0){
-        do{
-            // If unit is on screen, draw it.
-            if(p0_units[loop_counter][0] + 15 + x + camera_x <= 0
+    if (loop_counter >= 0) {
+        do {
+            // Draw p0 unit on screen
+            if (p0_units[loop_counter][0] + 15 + x + camera_x <= 0
               || p0_units[loop_counter][0] - 15 + x + camera_x >= width
               || p0_units[loop_counter][1] + 15 + y + camera_y <= 0
-              || p0_units[loop_counter][1] - 15 + y + camera_y >= height){
+              || p0_units[loop_counter][1] - 15 + y + camera_y >= height) {
                 continue;
             }
 
@@ -195,13 +228,13 @@ function draw(){
               30 * (p0_units[loop_counter][6] / 100),
               5
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     loop_counter = bullets.length - 1;
-    if(loop_counter >= 0){
+    if (loop_counter >= 0) {
         // Draw bullets.
-        do{
+        do {
             // Set bullet color to team color.
             buffer.fillStyle = bullets[loop_counter][4]
               ? '#f00'
@@ -213,28 +246,28 @@ function draw(){
               10,
               10
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw fog.
     buffer.fillStyle = '#000';
     loop_counter = fog.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             buffer.fillRect(
               -settings['level-size'] + fog[loop_counter][0],
               -settings['level-size'] + fog[loop_counter][1],
               100,
               100
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw building destination.
     loop_counter = p0_buildings.length - 1;
-    if(loop_counter >= 0){
-        do{
-            if(p0_buildings[loop_counter][5] && p0_buildings[loop_counter][6] != null){
+    if (loop_counter >= 0) {
+        do {
+            if (p0_buildings[loop_counter][5] && p0_buildings[loop_counter][6] != null) {
                 buffer.beginPath();
                 buffer.moveTo(
                   p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] / 2,
@@ -247,17 +280,17 @@ function draw(){
                 buffer.closePath();
                 buffer.stroke();
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw unit destination and range.
     loop_counter = p0_units.length - 1;
-    if(loop_counter >= 0){
-        do{
-            if(p0_units[loop_counter][2]){
+    if (loop_counter >= 0) {
+        do {
+            if (p0_units[loop_counter][2]) {
                 // If not yet reached destination, draw destination line.
-                if(p0_units[loop_counter][0] != p0_units[loop_counter][3]
-                  || p0_units[loop_counter][1] != p0_units[loop_counter][4]){
+                if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
+                  || p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                     buffer.beginPath();
                     buffer.moveTo(
                       p0_units[loop_counter][0],
@@ -284,7 +317,7 @@ function draw(){
                 buffer.closePath();
                 buffer.stroke();
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     buffer.translate(
@@ -293,7 +326,7 @@ function draw(){
     );
 
     // Draw selection box.
-    if(mouse_hold == 1){
+    if (mouse_hold == 1) {
         buffer.beginPath();
         buffer.rect(
           mouse_lock_x,
@@ -306,17 +339,17 @@ function draw(){
     }
 
     // Draw building while in build mode.
-    if(build_mode > 0){
+    if (build_mode > 0) {
         buffer.fillStyle='#1f1';
 
         var building_x = mouse_x - 50;
         var max_x = settings['level-size'] + camera_x + x - 100;
         var min_x = -settings['level-size'] + camera_x + x;
 
-        if(building_x > max_x){
+        if (building_x > max_x) {
             building_x = max_x;
 
-        }else if(building_x < min_x){
+        } else if (building_x < min_x) {
             building_x = min_x;
         }
 
@@ -324,10 +357,10 @@ function draw(){
         var max_y = settings['level-size'] + camera_y + y - 100;
         var min_y = -settings['level-size'] + camera_y + y;
 
-        if(building_y > max_x){
+        if (building_y > max_x) {
             building_y = max_x;
 
-        }else if(building_y < min_y){
+        } else if (building_y < min_y) {
             building_y = min_y;
         }
 
@@ -358,7 +391,7 @@ function draw(){
       205
     );
 
-    if(selected_type > 0){
+    if (selected_type > 0) {
         buffer.fillRect(
           205,
           height - 70,
@@ -405,22 +438,22 @@ function draw(){
 
     // Draw player 1 buildings on minimap.
     loop_counter = p1_buildings.length - 1;
-    if(loop_counter >= 0){
+    if (loop_counter >= 0) {
         buffer.fillStyle = '#600';
-        do{
+        do {
             buffer.fillRect(
               100 + p1_buildings[loop_counter][0] / level_size_math,
               height - 100 + p1_buildings[loop_counter][1] / level_size_math,
               50 / (settings['level-size'] / 200),
               50 / (settings['level-size'] / 200)
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw player 0 buildings on minimap.
     loop_counter = p0_buildings.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             buffer.fillStyle = p0_buildings[loop_counter][5] ? '#1f1' : '#060';
             buffer.fillRect(
               100 + p0_buildings[loop_counter][0] / level_size_math,
@@ -428,27 +461,27 @@ function draw(){
               50 / (settings['level-size'] / 200),
               50 / (settings['level-size'] / 200)
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw player 1 units on minimap.
     loop_counter = p1_units.length - 1;
-    if(loop_counter >= 0){
+    if (loop_counter >= 0) {
         buffer.fillStyle = '#b00';
-        do{
+        do {
             buffer.fillRect(
               100 + (p1_units[loop_counter][0] - 15) / level_size_math,
               height - 100 + (p1_units[loop_counter][1] - 15) / level_size_math,
               15 / (settings['level-size'] / 200),
               15 / (settings['level-size'] / 200)
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw player 0 units on minimap.
     loop_counter = p0_units.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             buffer.fillStyle = p0_units[loop_counter][2] ? '#1f1' : '#0b0';
             buffer.fillRect(
               100 + (p0_units[loop_counter][0] - 15) / level_size_math,
@@ -456,30 +489,30 @@ function draw(){
               15 / (settings['level-size'] / 200),
               15 / (settings['level-size'] / 200)
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw fog of war on minimap.
     buffer.fillStyle = '#000';
     loop_counter = fog.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             buffer.fillRect(
               fog[loop_counter][0] / level_size_math,
               height - 200 + fog[loop_counter][1] / level_size_math,
               50 / (settings['level-size'] / 200),
               50 / (settings['level-size'] / 200)
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw building destination on minimap.
     loop_counter = p0_buildings.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             // If buliding is selected and has a destination, draw destination line.
-            if(p0_buildings[loop_counter][5]
-              && p0_buildings[loop_counter][6] != null){
+            if (p0_buildings[loop_counter][5]
+              && p0_buildings[loop_counter][6] != null) {
                 buffer.beginPath();
                 buffer.moveTo(
                   100 + (p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] / 2) / level_size_math,
@@ -492,19 +525,19 @@ function draw(){
                 buffer.closePath();
                 buffer.stroke();
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     // Draw unit destination and range on minimap.
     loop_counter = p0_units.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             // If unit is selected.
-            if(p0_units[loop_counter][2]){
+            if (p0_units[loop_counter][2]) {
 
                 // If unit has a destination it has not yet reached, draw destination line.
-                if(p0_units[loop_counter][0] != p0_units[loop_counter][3]
-                  || p0_units[loop_counter][1] != p0_units[loop_counter][4]){
+                if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
+                  || p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                     buffer.beginPath();
                     buffer.moveTo(
                       100 + p0_units[loop_counter][0] / level_size_math,
@@ -531,7 +564,7 @@ function draw(){
                 buffer.closePath();
                 buffer.stroke();
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     var temp_height = 0;
@@ -540,12 +573,12 @@ function draw(){
     var temp_y = 0;
 
     // Draw selection box on minimap.
-    if(mouse_hold == 1){
+    if (mouse_hold == 1) {
         // Make sure box cannot go past right edge.
         temp_x = 100 - (x + camera_x - mouse_lock_x) / level_size_math;
         temp_width = (mouse_x - mouse_lock_x) / level_size_math;
         // Box past right edge? Decrease width to fix.
-        if(temp_x > 200 - temp_width){
+        if (temp_x > 200 - temp_width) {
             temp_width = 200 - temp_x;
         }
 
@@ -553,9 +586,9 @@ function draw(){
         temp_y = height - 100 - (y + camera_y - mouse_lock_y) / level_size_math;
         temp_height = (mouse_y - mouse_lock_y) / level_size_math;
         // Box past top edge? Decrease height and make sure height isn't negative.
-        if(temp_y < height - 200){
+        if (temp_y < height - 200) {
             temp_height -= height - 200 - temp_y;
-            if(temp_height < 0){
+            if (temp_height < 0) {
                 temp_height = 0;
             }
 
@@ -579,7 +612,7 @@ function draw(){
     temp_x = 100 - x / level_size_math - camera_x / level_size_math;
     temp_width = width / level_size_math;
     // Box past right edge? Decrease width to fix.
-    if(temp_x > 200 - temp_width){
+    if (temp_x > 200 - temp_width) {
         temp_width = 200 - temp_x;
     }
 
@@ -587,9 +620,9 @@ function draw(){
     temp_y = height - 100 - y / level_size_math - camera_y / level_size_math;
     temp_height = height / level_size_math;
     // Box past top edge? decrease height and make sure height isn't negative.
-    if(temp_y < height - 200){
+    if (temp_y < height - 200) {
         temp_height -= height - 200 - temp_y;
-        if(temp_height < 0){
+        if (temp_height < 0) {
             temp_height = 0;
         }
 
@@ -608,11 +641,11 @@ function draw(){
     buffer.stroke();
 
     // draw win/lose text if win/lose conditions met
-    if((p0_buildings.length < 1 && p0_units.length < 1)
-      || (p1_buildings.length < 1 && p1_units.length < 1)){
+    if ((p0_buildings.length < 1 && p0_units.length < 1)
+      || (p1_buildings.length < 1 && p1_units.length < 1)) {
         buffer.textAlign = 'center';
 
-        if(p0_buildings.length < 1){
+        if (p0_buildings.length < 1) {
             buffer.fillStyle = '#f00';
             buffer.fillText(
               'YOU LOSE! ☹',
@@ -620,7 +653,7 @@ function draw(){
               y / 2
             );
 
-        }else{
+        } else {
             buffer.fillStyle = '#0f0';
             buffer.fillText(
               'YOU WIN! ☺' ,
@@ -652,64 +685,68 @@ function draw(){
     animationFrame = window.requestAnimationFrame(draw);
 }
 
-function fog_update_building(){
+function fog_update_building() {
     var loop_counter = p0_buildings.length - 1;
-    do{
+    do {
         // Check if each fog unit is within 390px of a building.
         var fog_counter = fog.length - 1;
-        if(fog_counter >= 0){
-            do{
-                if(Math.sqrt(Math.pow(p0_buildings[loop_counter][1] - fog[fog_counter][1] + settings['level-size'], 2)
+        if (fog_counter >= 0) {
+            do {
+                if (Math.sqrt(Math.pow(p0_buildings[loop_counter][1] - fog[fog_counter][1] + settings['level-size'], 2)
                     + Math.pow(p0_buildings[loop_counter][0] - fog[fog_counter][0] + settings['level-size'], 2)
-                  ) < 390){
+                  ) < 390) {
                     fog.splice(
                       fog_counter,
                       1
                     );
                 }
-            }while(fog_counter--);
+            } while(fog_counter--);
         }
-    }while(loop_counter--);
+    } while(loop_counter--);
 }
 
-function logic(){
+function logic() {
+	// logic to do:
+	// money
+	// camera
+	
     money_timer += 1;
-    if(money_timer > 99){
+    if (money_timer > 99) {
         money_timer = 0;
         money[0] += 1;
         money[1] += 1;
     }
 
     // Move camera down.
-    if(key_down
-      && camera_y > -settings['level-size']){
+    if (key_down
+      && camera_y > -settings['level-size']) {
         camera_y -= settings['scroll-speed'];
         mouse_lock_y -= settings['scroll-speed'];
     }
 
     // Move camera left.
-    if(key_left
-      && camera_x < settings['level-size']){
+    if (key_left
+      && camera_x < settings['level-size']) {
         camera_x += settings['scroll-speed'];
         mouse_lock_x += settings['scroll-speed'];
     }
 
     // Move camera right.
-    if(key_right
-      && camera_x > -settings['level-size']){
+    if (key_right
+      && camera_x > -settings['level-size']) {
         camera_x -= settings['scroll-speed'];
         mouse_lock_x -= settings['scroll-speed'];
     }
 
     // Move camera up.
-    if(key_up
-      && camera_y < settings['level-size']){
+    if (key_up
+      && camera_y < settings['level-size']) {
         camera_y += settings['scroll-speed'];
         mouse_lock_y += settings['scroll-speed'];
     }
 
     // Handle selection box.
-    if(mouse_hold == 1){
+    if (mouse_hold == 1) {
         select();
     }
 
@@ -720,8 +757,8 @@ function logic(){
       height
     );
 
-    if(p1_buildings.length > 1){
-        if(money[1] >= 100){
+    if (p1_buildings.length > 1) {
+        if (money[1] >= 100) {
             money[1] -= 100;
             p1_units.push([
               p1_buildings[1][0] + p1_buildings[1][2] / 2,// X
@@ -735,20 +772,20 @@ function logic(){
     }
 
     loop_counter = p1_units.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             // If reloading, decrease reload,...
-            if(p1_units[loop_counter][4] > 0){
+            if (p1_units[loop_counter][4] > 0) {
                 p1_units[loop_counter][4] -= 1;
 
             // ...else look for nearby p0 units to fire at.
-            }else{
+            } else {
                 var check_for_buildings = true;
                 var p0_units_counter = p0_units.length - 1;
-                if(p0_units_counter >= 0){
-                    do{
-                        if(Math.sqrt(Math.pow(p1_units[loop_counter][1] - p0_units[p0_units_counter][1], 2)
-                         + Math.pow(p1_units[loop_counter][0] - p0_units[p0_units_counter][0], 2)) < 240){
+                if (p0_units_counter >= 0) {
+                    do {
+                        if (Math.sqrt(Math.pow(p1_units[loop_counter][1] - p0_units[p0_units_counter][1], 2)
+                         + Math.pow(p1_units[loop_counter][0] - p0_units[p0_units_counter][0], 2)) < 240) {
                             p1_units[loop_counter][4] = 75;
                             bullets.push([
                               p1_units[loop_counter][0],// X
@@ -760,16 +797,16 @@ function logic(){
                             check_for_buildings = false;
                             break;
                         }
-                    }while(p0_units_counter--);
+                    } while(p0_units_counter--);
                 }
 
                 // If no units in range, look for buildings to fire at.
-                if(check_for_buildings){
+                if (check_for_buildings) {
                     var p0_buildings_counter = p0_buildings.length - 1;
-                    if(p0_buildings_counter >= 0){
-                        do{
-                            if(Math.sqrt(Math.pow(p1_units[loop_counter][1] - (p0_buildings[p0_buildings_counter][1] + 50), 2)
-                             + Math.pow(p1_units[loop_counter][0] - (p0_buildings[p0_buildings_counter][0] + 50), 2)) < 240){
+                    if (p0_buildings_counter >= 0) {
+                        do {
+                            if (Math.sqrt(Math.pow(p1_units[loop_counter][1] - (p0_buildings[p0_buildings_counter][1] + 50), 2)
+                             + Math.pow(p1_units[loop_counter][0] - (p0_buildings[p0_buildings_counter][0] + 50), 2)) < 240) {
                                 p1_units[loop_counter][4] = 75;
                                 bullets.push([
                                   p1_units[loop_counter][0],// X
@@ -780,14 +817,14 @@ function logic(){
                                 ]);
                                 break;
                             }
-                        }while(p0_buildings_counter--);
+                        } while(p0_buildings_counter--);
                     }
                 }
             }
 
             // Movement "ai", pick new destination once destination is reached.
-            if(p1_units[loop_counter][0] != p1_units[loop_counter][2]
-              || p1_units[loop_counter][1] != p1_units[loop_counter][3]){
+            if (p1_units[loop_counter][0] != p1_units[loop_counter][2]
+              || p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
                 var j = m(
                   p1_units[loop_counter][0],
                   p1_units[loop_counter][1],
@@ -795,7 +832,7 @@ function logic(){
                   p1_units[loop_counter][3]
                 );
 
-                if(p1_units[loop_counter][0] != p1_units[loop_counter][2]){
+                if (p1_units[loop_counter][0] != p1_units[loop_counter][2]) {
                     p1_units[loop_counter][0] += 
                       (p1_units[loop_counter][0] > p1_units[loop_counter][2]
                         ? -j[0]
@@ -803,7 +840,7 @@ function logic(){
                       ) * .7;
                 }
 
-                if(p1_units[loop_counter][1] != p1_units[loop_counter][3]){
+                if (p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
                     p1_units[loop_counter][1] +=
                       (p1_units[loop_counter][1] > p1_units[loop_counter][3]
                         ? -j[1]
@@ -811,24 +848,24 @@ function logic(){
                       ) * .7;
                 }
 
-                if(p1_units[loop_counter][0] > p1_units[loop_counter][2] - 5
+                if (p1_units[loop_counter][0] > p1_units[loop_counter][2] - 5
                   && p1_units[loop_counter][0] < p1_units[loop_counter][2] + 5
                   && p1_units[loop_counter][1] > p1_units[loop_counter][3] - 5
-                  && p1_units[loop_counter][1] < p1_units[loop_counter][3] + 5){
+                  && p1_units[loop_counter][1] < p1_units[loop_counter][3] + 5) {
                     p1_units[loop_counter][2] = Math.floor(Math.random() * settings['level-size'] * 2) - settings['level-size'];
                     p1_units[loop_counter][3] = Math.floor(Math.random() * settings['level-size'] * 2) - settings['level-size'];
                 }
 
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     loop_counter = p0_units.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             // If not yet reached destination, move and update fog.
-            if(p0_units[loop_counter][0] != p0_units[loop_counter][3]
-              || p0_units[loop_counter][1] != p0_units[loop_counter][4]){
+            if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
+              || p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                 var j = m(
                   p0_units[loop_counter][0],
                   p0_units[loop_counter][1],
@@ -836,7 +873,7 @@ function logic(){
                   p0_units[loop_counter][4]
                 );
 
-                if(p0_units[loop_counter][0] != p0_units[loop_counter][3]){
+                if (p0_units[loop_counter][0] != p0_units[loop_counter][3]) {
                     p0_units[loop_counter][0] +=
                       (p0_units[loop_counter][0] > p0_units[loop_counter][3]
                         ? -j[0]
@@ -844,7 +881,7 @@ function logic(){
                       ) * .7;
                 }
 
-                if(p0_units[loop_counter][1] != p0_units[loop_counter][4]){
+                if (p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                     p0_units[loop_counter][1] +=
                       (p0_units[loop_counter][1] > p0_units[loop_counter][4] 
                         ? -j[1]
@@ -853,32 +890,32 @@ function logic(){
                 }
 
                 var fog_counter = fog.length - 1;
-                if(fog_counter >= 0){
-                    do{
-                        if(Math.sqrt(Math.pow(p0_units[loop_counter][1] - fog[fog_counter][1] + settings['level-size'] - 50, 2)
+                if (fog_counter >= 0) {
+                    do {
+                        if (Math.sqrt(Math.pow(p0_units[loop_counter][1] - fog[fog_counter][1] + settings['level-size'] - 50, 2)
                             + Math.pow(p0_units[loop_counter][0] - fog[fog_counter][0] + settings['level-size'] - 50, 2)
-                          ) < 290){
+                          ) < 290) {
                             fog.splice(
                               fog_counter,
                               1
                             );
                         }
-                    }while(fog_counter--);
+                    } while(fog_counter--);
                 }
             }
 
             // If reloading, decrease reload,...
-            if(p0_units[loop_counter][5] > 0){
+            if (p0_units[loop_counter][5] > 0) {
                 p0_units[loop_counter][5] -= 1;
 
             // ...else look for nearby p1 units to fire at.
-            }else{
+            } else {
                 var check_for_buildings = true;
                 var p1_units_counter = p1_units.length - 1;
-                if(p1_units_counter >= 0){
-                    do{
-                        if(Math.sqrt(Math.pow(p0_units[loop_counter][1] - p1_units[p1_units_counter][1], 2)
-                         + Math.pow(p0_units[loop_counter][0] - p1_units[p1_units_counter][0], 2)) < 240){
+                if (p1_units_counter >= 0) {
+                    do {
+                        if (Math.sqrt(Math.pow(p0_units[loop_counter][1] - p1_units[p1_units_counter][1], 2)
+                         + Math.pow(p0_units[loop_counter][0] - p1_units[p1_units_counter][0], 2)) < 240) {
                             p0_units[loop_counter][5] = 75;
                             bullets.push([
                               p0_units[loop_counter][0],// X
@@ -890,16 +927,16 @@ function logic(){
                             check_for_buildings = false;
                             break;
                         }
-                    }while(p1_units_counter--);
+                    } while(p1_units_counter--);
                 }
 
                 // If no units in range, look for buildings to fire at.
-                if(check_for_buildings){
+                if (check_for_buildings) {
                     var p1_buildings_counter = p1_buildings.length - 1;
-                    if(p1_buildings_counter >= 0){
-                        do{
-                            if(Math.sqrt(Math.pow(p0_units[loop_counter][1] - (p1_buildings[p1_buildings_counter][1] + 50), 2)
-                             + Math.pow(p0_units[loop_counter][0] - (p1_buildings[p1_buildings_counter][0] + 50), 2)) < 240){
+                    if (p1_buildings_counter >= 0) {
+                        do {
+                            if (Math.sqrt(Math.pow(p0_units[loop_counter][1] - (p1_buildings[p1_buildings_counter][1] + 50), 2)
+                             + Math.pow(p0_units[loop_counter][0] - (p1_buildings[p1_buildings_counter][0] + 50), 2)) < 240) {
                                 p0_units[loop_counter][5] = 75;
                                 bullets.push([
                                   p0_units[loop_counter][0],// X
@@ -910,16 +947,16 @@ function logic(){
                                 ]);
                                 break;
                             }
-                        }while(p1_buildings_counter--);
+                        } while(p1_buildings_counter--);
                     }
                 }
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     loop_counter = bullets.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             // Calculate bullet movement.
             var j = m(
               bullets[loop_counter][0],
@@ -929,7 +966,7 @@ function logic(){
             );
 
             // Move bullet x.
-            if(bullets[loop_counter][0] != bullets[loop_counter][2]){
+            if (bullets[loop_counter][0] != bullets[loop_counter][2]) {
                 bullets[loop_counter][0] +=
                   10
                   * (bullets[loop_counter][0] > bullets[loop_counter][2]
@@ -939,7 +976,7 @@ function logic(){
             }
 
             // Move bullet y.
-            if(bullets[loop_counter][1] != bullets[loop_counter][3]){
+            if (bullets[loop_counter][1] != bullets[loop_counter][3]) {
                 bullets[loop_counter][1] +=
                   10
                   * (bullets[loop_counter][1] > bullets[loop_counter][3]
@@ -949,122 +986,122 @@ function logic(){
             }
 
             // If bullet reaches destination, check for collisions.
-            if(bullets[loop_counter][0] <= bullets[loop_counter][2] - 10
+            if (bullets[loop_counter][0] <= bullets[loop_counter][2] - 10
               || bullets[loop_counter][0] >= bullets[loop_counter][2] + 10
               || bullets[loop_counter][1] <= bullets[loop_counter][3] - 10
-              || bullets[loop_counter][1] >= bullets[loop_counter][3] + 10){
+              || bullets[loop_counter][1] >= bullets[loop_counter][3] + 10) {
                 continue;
             }
 
-            if(bullets[loop_counter][4]){
+            if (bullets[loop_counter][4]) {
                 var p0_units_counter = p0_units.length - 1;
-                if(p0_units_counter >= 0){
-                    do{
-                        if(bullets[loop_counter][0] <= p0_units[p0_units_counter][0] - 15
+                if (p0_units_counter >= 0) {
+                    do {
+                        if (bullets[loop_counter][0] <= p0_units[p0_units_counter][0] - 15
                           || bullets[loop_counter][0] >= p0_units[p0_units_counter][0] + 15
                           || bullets[loop_counter][1] <= p0_units[p0_units_counter][1] - 15
-                          || bullets[loop_counter][1] >= p0_units[p0_units_counter][1] + 15){
+                          || bullets[loop_counter][1] >= p0_units[p0_units_counter][1] + 15) {
                             continue;
                         }
 
                         p0_units[p0_units_counter][6] -= 25;
-                        if(p0_units[p0_units_counter][6] <= 0){
+                        if (p0_units[p0_units_counter][6] <= 0) {
                             p0_units.splice(
                               p0_units_counter,
                               1
                             );
                         }
                         break;
-                    }while(p0_units_counter--);
+                    } while(p0_units_counter--);
                 }
 
                 var p0_buildings_counter = p0_buildings.length - 1;
-                if(p0_buildings_counter >= 0){
-                    do{
-                        if(bullets[loop_counter][0] <= p0_buildings[p0_buildings_counter][0]
+                if (p0_buildings_counter >= 0) {
+                    do {
+                        if (bullets[loop_counter][0] <= p0_buildings[p0_buildings_counter][0]
                           || bullets[loop_counter][0] >= p0_buildings[p0_buildings_counter][0] + 100
                           || bullets[loop_counter][1] <= p0_buildings[p0_buildings_counter][1]
-                          || bullets[loop_counter][1] >= p0_buildings[p0_buildings_counter][1] + 100){
+                          || bullets[loop_counter][1] >= p0_buildings[p0_buildings_counter][1] + 100) {
                             continue;
                         }
 
                         p0_buildings[p0_buildings_counter][4] -= 25;
-                        if(p0_buildings[p0_buildings_counter][4] <= 0){
+                        if (p0_buildings[p0_buildings_counter][4] <= 0) {
                             p0_buildings.splice(
                               p0_buildings_counter,
                               1
                             );
                         }
                         break;
-                    }while(p0_buildings_counter--);
+                    } while(p0_buildings_counter--);
                 }
 
-            }else{
+            } else {
                 var p1_units_counter = p1_units.length - 1;
-                if(p1_units_counter >= 0){
-                    do{
-                        if(bullets[loop_counter][0] <= p1_units[p1_units_counter][0] - 15
+                if (p1_units_counter >= 0) {
+                    do {
+                        if (bullets[loop_counter][0] <= p1_units[p1_units_counter][0] - 15
                           || bullets[loop_counter][0] >= p1_units[p1_units_counter][0] + 15
                           || bullets[loop_counter][1] <= p1_units[p1_units_counter][1] - 15
-                          || bullets[loop_counter][1] >= p1_units[p1_units_counter][1] + 15){
+                          || bullets[loop_counter][1] >= p1_units[p1_units_counter][1] + 15) {
                             continue;
                         }
 
                         p1_units[p1_units_counter][5] -= 25;
-                        if(p1_units[p1_units_counter][5] <= 0){
+                        if (p1_units[p1_units_counter][5] <= 0) {
                             p1_units.splice(
                               p1_units_counter,
                               1
                             );
                         }
                         break;
-                    }while(p1_units_counter--);
+                    } while(p1_units_counter--);
                 }
 
                 var p1_buildings_counter = p1_buildings.length - 1;
-                if(p1_buildings_counter >= 0){
-                    do{
-                        if(bullets[loop_counter][0] <= p1_buildings[p1_buildings_counter][0]
+                if (p1_buildings_counter >= 0) {
+                    do {
+                        if (bullets[loop_counter][0] <= p1_buildings[p1_buildings_counter][0]
                           || bullets[loop_counter][0] >= p1_buildings[p1_buildings_counter][0] + 100
                           || bullets[loop_counter][1] <= p1_buildings[p1_buildings_counter][1]
-                          || bullets[loop_counter][1] >= p1_buildings[p1_buildings_counter][1] + 100){
+                          || bullets[loop_counter][1] >= p1_buildings[p1_buildings_counter][1] + 100) {
                             continue;
                         }
 
                         p1_buildings[p1_buildings_counter][4] -= 25;
-                        if(p1_buildings[p1_buildings_counter][4] <= 0){
+                        if (p1_buildings[p1_buildings_counter][4] <= 0) {
                             p1_buildings.splice(
                               p1_buildings_counter,
                               1
                             );
                         }
                         break;
-                    }while(p1_buildings_counter--);
+                    } while(p1_buildings_counter--);
                 }
             }
             bullets.splice(
               loop_counter,
               1
             );
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 }
 
 // TODO: Improve clarity.
-function m(x0, y0, x1, y1){
+function m(x0, y0, x1, y1) {
     var j0 = Math.abs(x0 - x1);
     var j1 = Math.abs(y0 - y1);
 
-    if(j0 > j1){
+    if (j0 > j1) {
         return [1, j1 / j0];
 
-    }else{
+    } else {
         return j1 > j0 ? [j0 / j1, 1] : [.5, .5];
     }
 }
 
-function play_audio(id){
-    if(settings['audio-volume'] <= 0){
+function play_audio(id) {
+    if (settings['audio-volume'] <= 0) {
         return;
     }
 
@@ -1072,8 +1109,8 @@ function play_audio(id){
     document.getElementById(id).play();
 }
 
-function reset(){
-    if(!confirm('Reset settings?')){
+function reset() {
+    if (!confirm('Reset settings?')) {
         return;
     }
 
@@ -1087,8 +1124,8 @@ function reset(){
     save();
 }
 
-function resize(){
-    if(mode <= 0){
+function resize() {
+    if (mode <= 0) {
         return;
     }
 
@@ -1103,13 +1140,13 @@ function resize(){
     x = width / 2;
 }
 
-function save(){
+function save() {
     // Save audio-volume setting.
-    if(document.getElementById('audio-volume').value === 1){
+    if (document.getElementById('audio-volume').value === 1) {
         window.localStorage.removeItem('RTS-2D.htm-audio-volume');
         settings['audio-volume'] = 1;
 
-    }else{
+    } else {
         settings['audio-volume'] = parseFloat(document.getElementById('audio-volume').value);
         window.localStorage.setItem(
           'RTS-2D.htm-audio-volume',
@@ -1118,11 +1155,11 @@ function save(){
     }
 
     // Save camera-keys setting.
-    if(document.getElementById('camera-keys').value == 'WASD'){
+    if (document.getElementById('camera-keys').value == 'WASD') {
         window.localStorage.removeItem('RTS-2D.htm-camera-keys');
         settings['camera-keys'] = 'WASD';
 
-    }else{
+    } else {
         settings['camera-keys'] = document.getElementById('camera-keys').value;
         window.localStorage.setItem(
           'RTS-2D.htm-camera-keys',
@@ -1131,11 +1168,11 @@ function save(){
     }
 
     // Save fog-of-war setting.
-    if(document.getElementById('fog-of-war').checked){
+    if (document.getElementById('fog-of-war').checked) {
         window.localStorage.removeItem('RTS-2D.htm-fog-of-war');
         settings['fog-of-war'] = true;
 
-    }else{
+    } else {
         settings['fog-of-war'] = false;
         window.localStorage.setItem(
           'RTS-2D.htm-fog-of-war',
@@ -1144,14 +1181,14 @@ function save(){
     }
 
     // Save level-size setting.
-    if(document.getElementById('level-size').value == 1600
+    if (document.getElementById('level-size').value == 1600
       || isNaN(document.getElementById('level-size').value)
-      || document.getElementById('level-size').value < 200){
+      || document.getElementById('level-size').value < 200) {
         window.localStorage.removeItem('RTS-2D.htm-level-size');
         document.getElementById('level-size').value = 1600;
         settings['level-size'] = 1600;
 
-    }else{
+    } else {
         settings['level-size'] = parseInt(document.getElementById('level-size').value);
         window.localStorage.setItem(
           'RTS-2D.htm-level-size',
@@ -1160,14 +1197,14 @@ function save(){
     }
 
     // Save ms-per-frame setting.
-    if(document.getElementById('ms-per-frame').value == 25
+    if (document.getElementById('ms-per-frame').value == 25
       || isNaN(document.getElementById('ms-per-frame').value)
-      || document.getElementById('ms-per-frame').value < 1){
+      || document.getElementById('ms-per-frame').value < 1) {
         window.localStorage.removeItem('RTS-2D.htm-ms-per-frame');
         document.getElementById('ms-per-frame').value = 25;
         settings['ms-per-frame'] = 25;
 
-    }else{
+    } else {
         settings['ms-per-frame'] = parseInt(document.getElementById('ms-per-frame').value);
         window.localStorage.setItem(
           'RTS-2D.htm-ms-per-frame',
@@ -1176,14 +1213,14 @@ function save(){
     }
 
     // Save scroll-speed setting.
-    if(document.getElementById('scroll-speed').value == 10
+    if (document.getElementById('scroll-speed').value == 10
       || isNaN(document.getElementById('scroll-speed').value)
-      || document.getElementById('scroll-speed').value < 1){
+      || document.getElementById('scroll-speed').value < 1) {
         window.localStorage.removeItem('RTS-2D.htm-scroll-speed');
         document.getElementById('scroll-speed').value = 10;
         settings['scroll-speed'] = 10;
 
-    }else{
+    } else {
         settings['scroll-speed'] = parseInt(document.getElementById('scroll-speed').value);
         window.localStorage.setItem(
           'RTS-2D.htm-scroll-speed',
@@ -1192,13 +1229,13 @@ function save(){
     }
 }
 
-function select(){
+function select() {
     selected_id = -1;
     selected_type = -1;
 
     loop_counter = p0_units.length - 1;
-    if(loop_counter >= 0){
-        do{
+    if (loop_counter >= 0) {
+        do {
             p0_units[loop_counter][2] = (
                 (mouse_lock_x < x + p0_units[loop_counter][0] + camera_x + 15
                   && mouse_x > x + p0_units[loop_counter][0] + camera_x - 15)
@@ -1211,17 +1248,17 @@ function select(){
                   && mouse_y < y + p0_units[loop_counter][1] + camera_y + 15)
               );
 
-            if(p0_units[loop_counter][2]){
+            if (p0_units[loop_counter][2]) {
                 selected_id = loop_counter;
                 selected_type = 0;
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 
     loop_counter = p0_buildings.length - 1;
-    if(loop_counter >= 0){
-        do{
-            if(selected_type == -1){
+    if (loop_counter >= 0) {
+        do {
+            if (selected_type == -1) {
                 p0_buildings[loop_counter][5] = (
                     (mouse_lock_x < x + p0_buildings[loop_counter][0] + camera_x + p0_buildings[loop_counter][2]
                       && mouse_x > x + p0_buildings[loop_counter][0] + camera_x)
@@ -1234,31 +1271,31 @@ function select(){
                       && mouse_y < y + p0_buildings[loop_counter][1] + camera_y + p0_buildings[loop_counter][3])
                   );
 
-                if(p0_buildings[loop_counter][5]){
+                if (p0_buildings[loop_counter][5]) {
                     selected_id = loop_counter;
                     selected_type = p0_buildings[loop_counter][8];
                 }
 
-            }else{
+            } else {
                 p0_buildings[loop_counter][5] = 0;
             }
-        }while(loop_counter--);
+        } while(loop_counter--);
     }
 }
 
-function setdestination(on_minimap){
-    if(selected_type == 0){
+function setdestination(on_minimap) {
+    if (selected_type == 0) {
         var loop_counter = p0_units.length - 1;
-        if(loop_counter >= 0){
-            do{
-                if(p0_units[loop_counter][2]){
+        if (loop_counter >= 0) {
+            do {
+                if (p0_units[loop_counter][2]) {
                     p0_units[loop_counter][3] = on_minimap
                       ? level_size_math * (mouse_x - 100)
                       : mouse_x - x - camera_x;
 
-                    if(p0_units[loop_counter][3] > settings['level-size']){
+                    if (p0_units[loop_counter][3] > settings['level-size']) {
                         p0_units[loop_counter][3] = settings['level-size'];
-                    }else if(p0_units[loop_counter][3] < -settings['level-size']){
+                    } else if (p0_units[loop_counter][3] < -settings['level-size']) {
                         p0_units[loop_counter][3] = -settings['level-size'];
                     }
 
@@ -1266,27 +1303,27 @@ function setdestination(on_minimap){
                       ? level_size_math * (mouse_y - height + 100)
                       : mouse_y - y - camera_y;
 
-                    if(p0_units[loop_counter][4] > settings['level-size']){
+                    if (p0_units[loop_counter][4] > settings['level-size']) {
                         p0_units[loop_counter][4] = settings['level-size'];
-                    }else if(p0_units[loop_counter][4] < -settings['level-size']){
+                    } else if (p0_units[loop_counter][4] < -settings['level-size']) {
                         p0_units[loop_counter][4] = -settings['level-size'];
                     }
                 }
-            }while(loop_counter--);
+            } while(loop_counter--);
         }
 
-    }else if(selected_type > 1){
+    } else if (selected_type > 1) {
         var loop_counter = p0_buildings.length - 1;
-        if(loop_counter >= 0){
-            do{
-                if(p0_buildings[loop_counter][5]){
+        if (loop_counter >= 0) {
+            do {
+                if (p0_buildings[loop_counter][5]) {
                     p0_buildings[loop_counter][6] = on_minimap
                       ? level_size_math * (mouse_x - 100)
                       : mouse_x - x - camera_x;
 
-                    if(p0_buildings[loop_counter][6] > settings['level-size']){
+                    if (p0_buildings[loop_counter][6] > settings['level-size']) {
                         p0_buildings[loop_counter][6] = settings['level-size'];
-                    }else if(p0_buildings[loop_counter][6] < -settings['level-size']){
+                    } else if (p0_buildings[loop_counter][6] < -settings['level-size']) {
                         p0_buildings[loop_counter][6] = -settings['level-size'];
                     }
 
@@ -1294,18 +1331,18 @@ function setdestination(on_minimap){
                       ? level_size_math * (mouse_y - height + 100)
                       : mouse_y - y - camera_y;
 
-                    if(p0_buildings[loop_counter][7] > settings['level-size']){
+                    if (p0_buildings[loop_counter][7] > settings['level-size']) {
                         p0_buildings[loop_counter][7] = settings['level-size'];
-                    }else if(p0_buildings[loop_counter][7] < -settings['level-size']){
+                    } else if (p0_buildings[loop_counter][7] < -settings['level-size']) {
                         p0_buildings[loop_counter][7] = -settings['level-size'];
                     }
                 }
-            }while(loop_counter--);
+            } while(loop_counter--);
         }
     }
 }
 
-function setmode(newmode){
+function setmode(newmode) {
     window.cancelAnimationFrame(animationFrame);
     clearInterval(interval);
 
@@ -1313,7 +1350,7 @@ function setmode(newmode){
     mode = newmode;
 
     // New game mode.
-    if(mode > 0){
+    if (mode > 0) {
         save();
 
         key_down = false;
@@ -1403,13 +1440,13 @@ function setmode(newmode){
 
         // Add fog of war, if settings allow it.
         fog = [];
-        if(settings['fog-of-war']){
+        if (settings['fog-of-war']) {
             var temp_x = 0;
             var temp_y = 0;
             var times = Math.floor(settings['level-size'] / 50);// Half of level width divided by half of fog unit.
 
             var loop_counter = Math.pow(times, 2) - 1;// True number of fog units to add.
-            do{
+            do {
                 fog.push([
                   temp_x * 100,// Fog X
                   temp_y,// Fog Y
@@ -1419,11 +1456,11 @@ function setmode(newmode){
                 temp_x += 1;
 
                 // Done with this row, move on to the next.
-                if(loop_counter % times == 0){
+                if (loop_counter % times == 0) {
                     temp_y += 100;
                     temp_x = 0;
                 }
-            }while(loop_counter--);
+            } while(loop_counter--);
 
             // Remove fog around initial buildings.
             fog_update_building();
@@ -1441,7 +1478,7 @@ function setmode(newmode){
         );
 
     // Main menu mode.
-    }else{
+    } else {
         buffer = 0;
         canvas = 0;
 
@@ -1455,22 +1492,29 @@ function setmode(newmode){
     }
 }
 
-function validate_camera_move(mouse_x, mouse_y){
+function validate_camera_move(mouse_x, mouse_y) {
     camera_x = -level_size_math * (mouse_x - 100);
-    if(camera_x > settings['level-size']){
+    if (camera_x > settings['level-size']) {
         camera_x = settings['level-size'];
-    }else if(camera_x < -settings['level-size']){
+    } else if (camera_x < -settings['level-size']) {
         camera_x = -settings['level-size'];
     }
 
     camera_y = -level_size_math * (mouse_y - height + 100);
-    if(camera_y > settings['level-size']){
+    if (camera_y > settings['level-size']) {
         camera_y = settings['level-size'];
-    }else if(camera_y < -settings['level-size']){
+    } else if (camera_y < -settings['level-size']) {
         camera_y = -settings['level-size'];
     }
 }
 
+// debug variables
+var debug_flag = true;
+var draw_frame_count = 0;
+
+console.log("debug flag", debug_flag);
+
+// state variables
 var animationFrame = 0;
 var buffer = 0;
 var build_mode = 0;
@@ -1494,7 +1538,7 @@ var mouse_lock_x = 0;
 var mouse_lock_y = 0;
 var mouse_x = 0;
 var mouse_y = 0;
-var p0_buildings = [];
+var p0_buildings = []; // [6][7] for destination
 var p0_units = [];
 var p1_buildings = [];
 var p1_units = [];
@@ -1526,18 +1570,18 @@ var y = 0;
 
 setmode(0);
 
-window.onkeydown = function(e){
-    if(mode <= 0){
+window.onkeydown = function(e) {
+    if (mode <= 0) {
         return;
     }
 
     var key = e.keyCode || e.which;
 
-    if(key === 27){
-        if(build_mode > 0){
+    if (key === 27) {
+        if (build_mode > 0) {
             build_mode = 0;
 
-        }else{
+        } else {
             setmode(0);
         }
 
@@ -1545,84 +1589,87 @@ window.onkeydown = function(e){
     }
 
     // user selected HQ
-    if(selected_type === 1){
-        if(key === 70){
+    if (selected_type === 1) {
+        if (key === 70) {
             build_mode = 1;
+			console.log("build mode = 1");
             return;
         }
 
     // user selected factory and pressed R button
-    }else if(selected_type === 2
-      && key === 82){
+    } else if (selected_type === 2
+      && key === 82) {
         build_robot();
         return;
     }
 
     key = String.fromCharCode(key);
 
-    if(key === settings['camera-keys'][1]){
+    if (key === settings['camera-keys'][1]) {
         key_left = true;
 
-    }else if(key === settings['camera-keys'][3]){
+    } else if (key === settings['camera-keys'][3]) {
         key_right = true;
 
-    }else if(key === settings['camera-keys'][2]){
+    } else if (key === settings['camera-keys'][2]) {
         key_down = true;
 
-    }else if(key === settings['camera-keys'][0]){
+    } else if (key === settings['camera-keys'][0]) {
         key_up = true;
     }
 };
 
-window.onkeyup = function(e){
+window.onkeyup = function(e) {
     var key = String.fromCharCode(e.keyCode || e.which);
 
-    if(key === settings['camera-keys'][1]){
+    if (key === settings['camera-keys'][1]) {
         key_left = false;
 
-    }else if(key === settings['camera-keys'][3]){
+    } else if (key === settings['camera-keys'][3]) {
         key_right = false;
 
-    }else if(key === settings['camera-keys'][2]){
+    } else if (key === settings['camera-keys'][2]) {
         key_down = false;
 
-    }else if(key === settings['camera-keys'][0]){
+    } else if (key === settings['camera-keys'][0]) {
         key_up = false;
     }
 };
 
-window.onmousedown = function(e){
-    if(mode <= 0){
+window.onmousedown = function(e) {
+    if (mode <= 0) {
         return;
     }
 
     e.preventDefault();
 
     // If not clicking on minimap.
-    if(mouse_x > 200
-      || mouse_y < height - 200){
+    if (mouse_x > 200
+      || mouse_y < height - 200) {
 
         // Check if in buildling mode.
-        if(build_mode > 0){
+        if (build_mode > 0) {
             // Build a factory.
-            if(money[0] >= 250){
+            if (money[0] >= 250) {
                 build_mode = 0;
+				console.log("build mode = 0");
+
                 money[0] -= 250;
 
                 // Make sure building is within buildable limit.
                 var building_x = mouse_x - camera_x - x - 50;
-                if(building_x > settings['level-size'] - 100){
+                if (building_x > settings['level-size'] - 100) {
                     building_x = settings['level-size'] - 100;
 
-                }else if(building_x < -settings['level-size']){
+                } else if (building_x < -settings['level-size']) {
                     building_x = -settings['level-size'];
                 }
 
                 var building_y = mouse_y - camera_y - y - 50;
-                if(building_y > settings['level-size'] - 100){
+                if (building_y > settings['level-size'] - 100) {
                     building_y = settings['level-size'] - 100;
 
-                }else if(building_y < -settings['level-size']){
+                } else if (building_y < -settings['level-size']) {
                     building_y = -settings['level-size'];
                 }
 
@@ -1645,35 +1692,36 @@ window.onmousedown = function(e){
             }
 
         // If unit selected or not clicking on build robot button.
-        }else if(selected_type < 1
+        } else if (selected_type < 1
           || (mouse_y < height - 65
-          || mouse_x > 270)){
+          || mouse_x > 270)) {
             // Left click: start dragging.
-            if(e.button == 0){
+            if (e.button == 0) {
                 mouse_hold = 1;
                 mouse_lock_x = mouse_x;
                 mouse_lock_y = mouse_y;
 
             // Right click: try to set selected building/unit destination.
-            }else if(e.button == 2){
+            } else if (e.button == 2) {
                 setdestination(false);
             }
 
         // Else if HQ is selected, activate build mode.
-        }else if(selected_type == 1){
+        } else if (selected_type == 1) {
             build_mode = 1;
+			console.log("build mode = 1");
 
         // Else if factory is selected, build robot.
-        }else if(selected_type == 2){
+        } else if (selected_type == 2) {
             build_robot();
         }
 
     // Right clicking on minimap.
-    }else if(e.button == 2){
+    } else if (e.button == 2) {
         setdestination(true);
 
     // Other clicks: move camera.
-    }else{
+    } else {
         mouse_hold = 2;
 
         validate_camera_move(
@@ -1683,31 +1731,31 @@ window.onmousedown = function(e){
     }
 };
 
-window.onmousemove = function(e){
-    if(mode <= 0){
+window.onmousemove = function(e) {
+    if (mode <= 0) {
         return;
     }
 
     mouse_x = e.pageX;
-    if(mouse_x < 0){
+    if (mouse_x < 0) {
         mouse_x = 0;
-    }else if(mouse_x > width){
+    } else if (mouse_x > width) {
         mouse_x = width;
     }
 
     mouse_y = e.pageY;
-    if(mouse_y < 0){
+    if (mouse_y < 0) {
         mouse_y = 0;
-    }else if(mouse_y > height){
+    } else if (mouse_y > height) {
         mouse_y = height;
     }
 
     // Dragging after click was not on minimap.
-    if(mouse_hold == 1){
+    if (mouse_hold == 1) {
         select();
 
     // Dragging after click was on minimap.
-    }else if(mouse_hold == 2){
+    } else if (mouse_hold == 2) {
         validate_camera_move(
           mouse_x,
           mouse_y
@@ -1715,7 +1763,7 @@ window.onmousemove = function(e){
     }
 };
 
-window.onmouseup = function(){
+window.onmouseup = function() {
     mouse_hold = 0;
 };
 
