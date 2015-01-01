@@ -707,7 +707,7 @@ function fog_update_building() {
 
 function logic() {
 	// logic to do:
-	// money
+	// money (2.5s for 1$)
 	// camera
 	
     money_timer += 1;
