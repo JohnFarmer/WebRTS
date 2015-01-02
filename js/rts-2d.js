@@ -50,9 +50,12 @@ function draw() {
     // Draw camera boundaries on minimap.
     // draw win/lose text if win/lose conditions met
 
+
 	draw_frame_count += 1;
-	if (debug_flag && draw_frame_count % 40 === 0) {
+	if (debug_flag && draw_frame_count % 80 === 0) {
 		//console.log("frame count", draw_frame_count);
+		console.log("(x,y)", x, y);
+		console.log("(c_x,c_y)", camera_x, camera_y);
 	}
 
     buffer.clearRect(
@@ -73,10 +76,12 @@ function draw() {
     if (loop_counter >= 0) {
         do {
             // Draw world static on screen
-            if (world_static[loop_counter][0] + world_static[loop_counter][2] + offset_x <= 0
-              || world_static[loop_counter][0] + offset_x >= width
-              || world_static[loop_counter][1] + world_static[loop_counter][3] + offset_y <= 0
-              || world_static[loop_counter][1] + offset_y >= height) {
+            if (world_static[loop_counter][0] +
+				world_static[loop_counter][2] + offset_x <= 0
+				|| world_static[loop_counter][0] + offset_x >= width
+				|| world_static[loop_counter][1] +
+				world_static[loop_counter][3] + offset_y <= 0
+				|| world_static[loop_counter][1] + offset_y >= height) {
                 continue;
             }
 
@@ -98,10 +103,13 @@ function draw() {
     if (loop_counter >= 0) {
         do {
             // Draw p1 building on screen
-            if (p1_buildings[loop_counter][0] + p1_buildings[loop_counter][2] + offset_x <= 0
-              || p1_buildings[loop_counter][0] + offset_x >= width
-              || p1_buildings[loop_counter][1] + p1_buildings[loop_counter][3] + offset_y <= 0
-              || p1_buildings[loop_counter][1] + offset_y >= height) {
+            if (p1_buildings[loop_counter][0] +
+				p1_buildings[loop_counter][2] +
+				offset_x <= 0
+				|| p1_buildings[loop_counter][0] + offset_x >= width
+				|| p1_buildings[loop_counter][1] +
+				p1_buildings[loop_counter][3] + offset_y <= 0
+				|| p1_buildings[loop_counter][1] + offset_y >= height) {
                 continue;
             }
 
@@ -116,7 +124,8 @@ function draw() {
             buffer.fillRect(
               p1_buildings[loop_counter][0],
               p1_buildings[loop_counter][1] - 10,
-              p1_buildings[loop_counter][2] * (p1_buildings[loop_counter][4] / 1000),
+              p1_buildings[loop_counter][2] *
+					(p1_buildings[loop_counter][4] / 1000),
               5
             );
 
@@ -138,27 +147,31 @@ function draw() {
     if (loop_counter >= 0) {
         do {
             // Draw p0 building on screen
-            if (p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] + offset_x <= 0
-              || p0_buildings[loop_counter][0] + offset_x >= width
-              || p0_buildings[loop_counter][1] + p0_buildings[loop_counter][3] + offset_y <= 0
-              || p0_buildings[loop_counter][1] + offset_y >= height) {
+            if (p0_buildings[loop_counter][0] +
+				p0_buildings[loop_counter][2] +
+				offset_x <= 0
+				|| p0_buildings[loop_counter][0] + offset_x >= width
+				|| p0_buildings[loop_counter][1] +
+				p0_buildings[loop_counter][3] +
+				offset_y <= 0
+				|| p0_buildings[loop_counter][1] + offset_y >= height) {
                 continue;
             }
 
-            buffer.fillStyle = p0_buildings[loop_counter][5]
-              ? '#1f1'
-              : '#060';
+            buffer.fillStyle = p0_buildings[loop_counter][5] ?
+				'#1f1' : '#060';
             buffer.fillRect(
-              p0_buildings[loop_counter][0],
-              p0_buildings[loop_counter][1],
-              p0_buildings[loop_counter][2],
-              p0_buildings[loop_counter][3]
+				p0_buildings[loop_counter][0],
+				p0_buildings[loop_counter][1],
+				p0_buildings[loop_counter][2],
+				p0_buildings[loop_counter][3]
             );
             buffer.fillStyle = '#0f0';
             buffer.fillRect(
-              p0_buildings[loop_counter][0],
-              p0_buildings[loop_counter][1] - 10,
-              p0_buildings[loop_counter][2] * (p0_buildings[loop_counter][4] / 1000),
+				p0_buildings[loop_counter][0],
+				p0_buildings[loop_counter][1] - 10,
+				p0_buildings[loop_counter][2] *
+					(p0_buildings[loop_counter][4] / 1000),
               5
             );
 
@@ -221,6 +234,14 @@ function draw() {
               30,
               30
             );
+
+			if (heavy_debug_flag) {
+				console.log("p0 unit",
+							loop_counter,
+							p0_units[loop_counter][0],
+							p0_units[loop_counter][1]);
+			}
+
             buffer.fillStyle = '#0f0';
             buffer.fillRect(
               p0_units[loop_counter][0] - 15,
@@ -823,6 +844,10 @@ function logic() {
             }
 
             // Movement "ai", pick new destination once destination is reached.
+			//if (in_position(p1_units[loop_counter][0],
+							//p1_units[loop_counter][3],
+							//p1_units[loop_counter][1],
+							//p1_units[loop_counter][4])) {
             if (p1_units[loop_counter][0] != p1_units[loop_counter][2]
               || p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
                 var j = m(
@@ -837,7 +862,7 @@ function logic() {
                       (p1_units[loop_counter][0] > p1_units[loop_counter][2]
                         ? -j[0]
                         : j[0]
-                      ) * .7;
+                      ) * moving_speed;
                 }
 
                 if (p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
@@ -845,7 +870,7 @@ function logic() {
                       (p1_units[loop_counter][1] > p1_units[loop_counter][3]
                         ? -j[1]
                         : j[1]
-                      ) * .7;
+                      ) * moving_speed;
                 }
 
                 if (p1_units[loop_counter][0] > p1_units[loop_counter][2] - 5
@@ -864,8 +889,12 @@ function logic() {
     if (loop_counter >= 0) {
         do {
             // If not yet reached destination, move and update fog.
-            if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
-              || p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
+			if (in_position(p0_units[loop_counter][0],
+							p0_units[loop_counter][1],
+							p0_units[loop_counter][3],
+							p0_units[loop_counter][4])) {
+            //if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
+              //|| p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                 var j = m(
                   p0_units[loop_counter][0],
                   p0_units[loop_counter][1],
@@ -873,12 +902,21 @@ function logic() {
                   p0_units[loop_counter][4]
                 );
 
+
+				//if (heavy_debug_flag)
+					//console.log(
+						//p0_units[loop_counter][0],
+						//p0_units[loop_counter][1],
+						//p0_units[loop_counter][3],
+						//p0_units[loop_counter][4]
+					//);
+
                 if (p0_units[loop_counter][0] != p0_units[loop_counter][3]) {
                     p0_units[loop_counter][0] +=
                       (p0_units[loop_counter][0] > p0_units[loop_counter][3]
                         ? -j[0]
                         : j[0]
-                      ) * .7;
+                      ) * moving_speed;
                 }
 
                 if (p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
@@ -886,7 +924,7 @@ function logic() {
                       (p0_units[loop_counter][1] > p0_units[loop_counter][4] 
                         ? -j[1]
                         : j[1]
-                      ) * .7;
+                      ) * moving_speed;
                 }
 
                 var fog_counter = fog.length - 1;
@@ -1092,12 +1130,24 @@ function m(x0, y0, x1, y1) {
     var j0 = Math.abs(x0 - x1);
     var j1 = Math.abs(y0 - y1);
 
+	//if (heavy_debug_flag)
+		//console.log("m(int**4)", x0, y0, x1, y1);
+
     if (j0 > j1) {
         return [1, j1 / j0];
 
     } else {
         return j1 > j0 ? [j0 / j1, 1] : [.5, .5];
     }
+}
+
+function in_position(x0, y0, x1, y1) {
+	var res = Math.abs(x0 - x1) <= 1 && Math.abs(y0 - y1) <= 1 ? false : true;
+	if (heavy_debug_flag) {
+		console.log("in_position?", x0, y0, x1, y1);
+		console.log("in_position?", !res);
+	}
+	return res;
 }
 
 function play_audio(id) {
@@ -1138,6 +1188,8 @@ function resize() {
     document.getElementById('buffer').width = width;
     document.getElementById('canvas').width = width;
     x = width / 2;
+
+	console.log("set (x,y)", x, y);
 }
 
 function save() {
@@ -1284,14 +1336,15 @@ function select() {
 }
 
 function setdestination(on_minimap) {
+	var loop_counter;
     if (selected_type == 0) {
-        var loop_counter = p0_units.length - 1;
+        loop_counter = p0_units.length - 1;
         if (loop_counter >= 0) {
             do {
                 if (p0_units[loop_counter][2]) {
-                    p0_units[loop_counter][3] = on_minimap
-                      ? level_size_math * (mouse_x - 100)
-                      : mouse_x - x - camera_x;
+                    p0_units[loop_counter][3] = on_minimap ?
+						level_size_math * (mouse_x - 100)
+						: mouse_x - x - camera_x;
 
                     if (p0_units[loop_counter][3] > settings['level-size']) {
                         p0_units[loop_counter][3] = settings['level-size'];
@@ -1313,7 +1366,7 @@ function setdestination(on_minimap) {
         }
 
     } else if (selected_type > 1) {
-        var loop_counter = p0_buildings.length - 1;
+        loop_counter = p0_buildings.length - 1;
         if (loop_counter >= 0) {
             do {
                 if (p0_buildings[loop_counter][5]) {
@@ -1477,6 +1530,8 @@ function setmode(newmode) {
           settings['ms-per-frame']
         );
 
+		// parse moving speed;
+
     // Main menu mode.
     } else {
         buffer = 0;
@@ -1508,8 +1563,9 @@ function validate_camera_move(mouse_x, mouse_y) {
     }
 }
 
-// debug variables
+// debug flag variables
 var debug_flag = true;
+var heavy_debug_flag = false; // print some msg every frame, cost a log of cpu
 var draw_frame_count = 0;
 
 console.log("debug flag", debug_flag);
@@ -1546,27 +1602,33 @@ var pi_times_two = Math.PI * 2;
 var selected_id = -1;
 var selected_type = -1;
 var settings = {
-  'audio-volume': window.localStorage.getItem('RTS-2D.htm-audio-volume') === null
+  'audio-volume':
+	window.localStorage.getItem('RTS-2D.htm-audio-volume') === null
     ? 1
     : parseFloat(window.localStorage.getItem('RTS-2D.htm-audio-volume')),
-  'camera-keys': window.localStorage.getItem('RTS-2D.htm-camera-keys') === null
+  'camera-keys':
+	window.localStorage.getItem('RTS-2D.htm-camera-keys') === null
     ? 'WASD'
     : window.localStorage.getItem('RTS-2D.htm-camera-keys'),
   'fog-of-war': window.localStorage.getItem('RTS-2D.htm-fog-of-war') === null,
-  'level-size': window.localStorage.getItem('RTS-2D.htm-level-size') === null
+  'level-size':
+	window.localStorage.getItem('RTS-2D.htm-level-size') === null
     ? 1600
     : parseFloat(window.localStorage.getItem('RTS-2D.htm-level-size')),
-  'ms-per-frame': window.localStorage.getItem('RTS-2D.htm-ms-per-frame') === null
+  'ms-per-frame':
+	window.localStorage.getItem('RTS-2D.htm-ms-per-frame') === null
     ? 25
     : parseInt(window.localStorage.getItem('RTS-2D.htm-ms-per-frame')),
-  'scroll-speed': window.localStorage.getItem('RTS-2D.htm-scroll-speed') === null
+  'scroll-speed':
+	window.localStorage.getItem('RTS-2D.htm-scroll-speed') === null
     ? 10
-    : parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed')),
+    : parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
 };
 var width = 0;
 var world_static = [];
 var x = 0;
 var y = 0;
+var moving_speed = 0.75;
 
 setmode(0);
 
@@ -1644,6 +1706,10 @@ window.onmousedown = function(e) {
     e.preventDefault();
 
     // If not clicking on minimap.
+	if (debug_flag) {
+		console.log("mouse (x,y)", mouse_x, mouse_y);
+	}
+
     if (mouse_x > 200
       || mouse_y < height - 200) {
 
@@ -1660,7 +1726,6 @@ window.onmousedown = function(e) {
                 var building_x = mouse_x - camera_x - x - 50;
                 if (building_x > settings['level-size'] - 100) {
                     building_x = settings['level-size'] - 100;
-
                 } else if (building_x < -settings['level-size']) {
                     building_x = -settings['level-size'];
                 }
@@ -1693,8 +1758,7 @@ window.onmousedown = function(e) {
 
         // If unit selected or not clicking on build robot button.
         } else if (selected_type < 1
-          || (mouse_y < height - 65
-          || mouse_x > 270)) {
+				   || (mouse_y < height - 65 || mouse_x > 270)) {
             // Left click: start dragging.
             if (e.button == 0) {
                 mouse_hold = 1;
