@@ -1,15 +1,0 @@
-
-js/rts-2d.js,385
-function build_robot(1,0
-function draw(24,622
-function fog_update_building(655,19893
-function logic(675,20601
-function m(1054,36367
-function play_audio(1066,36577
-function reset(1075,36756
-function resize(1090,37190
-function save(1106,37574
-function select(1195,40618
-function setdestination(1249,42954
-function setmode(1308,45542
-function validate_camera_move(1458,50830
