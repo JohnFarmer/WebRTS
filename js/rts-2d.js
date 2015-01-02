@@ -728,9 +728,30 @@ function fog_update_building() {
 
 function logic() {
 	// logic to do:
+	////// basic
 	// money (2.5s for 1$)
 	// camera
-	
+    // Handle selection box.
+    // If reloading, decrease reload,...
+
+	////// for CPU's units
+    // ...else look for nearby p0 units to fire at.
+    // If no units in range, look for buildings to fire at.
+    // Movement "ai", pick new destination once destination is reached.
+    // If not yet reached destination, move and update fog.
+
+	////// for Player's units
+	// TODO: make sure p0 units are not too close from each other
+    // ...else look for nearby p1 units to fire at.
+    // If no units in range, look for buildings to fire at.
+
+	////// for bullet's stuff
+    // Calculate bullet movement.
+    // If reloading, decrease reload,...
+    // Move bullet x.
+    // Move bullet y.
+    // If bullet reaches destination, check for collisions.
+
     money_timer += 1;
     if (money_timer > 99) {
         money_timer = 0;
@@ -740,28 +761,28 @@ function logic() {
 
     // Move camera down.
     if (key_down
-      && camera_y > -settings['level-size']) {
+		&& camera_y > -settings['level-size']) {
         camera_y -= settings['scroll-speed'];
         mouse_lock_y -= settings['scroll-speed'];
     }
 
     // Move camera left.
     if (key_left
-      && camera_x < settings['level-size']) {
+		&& camera_x < settings['level-size']) {
         camera_x += settings['scroll-speed'];
         mouse_lock_x += settings['scroll-speed'];
     }
 
     // Move camera right.
     if (key_right
-      && camera_x > -settings['level-size']) {
+		&& camera_x > -settings['level-size']) {
         camera_x -= settings['scroll-speed'];
         mouse_lock_x -= settings['scroll-speed'];
     }
 
     // Move camera up.
     if (key_up
-      && camera_y < settings['level-size']) {
+		&& camera_y < settings['level-size']) {
         camera_y += settings['scroll-speed'];
         mouse_lock_y += settings['scroll-speed'];
     }
@@ -893,8 +914,9 @@ function logic() {
 							p0_units[loop_counter][1],
 							p0_units[loop_counter][3],
 							p0_units[loop_counter][4])) {
-            //if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
-              //|| p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
+				// mark that unit is moving
+				p0_units[loop_counter][7] = true;
+
                 var j = m(
                   p0_units[loop_counter][0],
                   p0_units[loop_counter][1],
@@ -940,7 +962,23 @@ function logic() {
                         }
                     } while(fog_counter--);
                 }
-            }
+            } else {
+				// When reached destination 
+				// units should not too close to each other
+
+				//mark unit is not moving
+				p0_units[loop_counter][7] = false;
+				for (var it = 0; it< p0_units.length; it += 1) {
+					if (it == loop_counter) {
+
+					} else {
+						if (distance(p0_units[loop_counter],
+									 p0_units[it]) <= 20) {
+							random_walk(p0_units[loop_counter], 40);
+						}
+					}
+				}
+			}
 
             // If reloading, decrease reload,...
             if (p0_units[loop_counter][5] > 0) {
@@ -1148,6 +1186,16 @@ function in_position(x0, y0, x1, y1) {
 		console.log("in_position?", !res);
 	}
 	return res;
+}
+
+function distance(u1, u2) {
+	return Math.sqrt(Math.pow(u1[0] - u2[0], 2) +
+					 Math.pow(u1[1] - u2[1], 2));
+}
+
+function random_walk(unit) {
+	unit[3] = unit[0] + Math.random() * 30 - 15; 
+	unit[4] = unit[1] + Math.random() * 30 - 15;
 }
 
 function play_audio(id) {
@@ -1596,6 +1644,14 @@ var mouse_x = 0;
 var mouse_y = 0;
 var p0_buildings = []; // [6][7] for destination
 var p0_units = [];
+/* p0_units structure
+ 0/1: current location (x,y)
+ 2  : fill color (selected or not)('#1f1' : '#0b0')
+ 3/4: destination (x,y)
+ 5  : bullet reload timer
+ 6  : HP
+ 7  : is moving or not (true for moving)
+*/
 var p1_buildings = [];
 var p1_units = [];
 var pi_times_two = Math.PI * 2;
