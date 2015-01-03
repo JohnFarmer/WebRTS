@@ -1,4 +1,5 @@
 function build_robot() {
+
     if (money[0] < 100) {
         return;
     }
@@ -741,9 +742,9 @@ function logic() {
     // If not yet reached destination, move and update fog.
 
 	////// for Player's units
-	// TODO: make sure p0 units are not too close from each other
     // ...else look for nearby p1 units to fire at.
     // If no units in range, look for buildings to fire at.
+	// make sure p0 units are not too close from each other
 
 	////// for bullet's stuff
     // Calculate bullet movement.
@@ -972,9 +973,13 @@ function logic() {
 					if (it == loop_counter) {
 
 					} else {
-						if (distance(p0_units[loop_counter],
-									 p0_units[it]) <= 20) {
-							random_walk(p0_units[loop_counter], 40);
+						// only check units which are not moving
+						if (!p0_units[it][7]
+							&& distance(p0_units[loop_counter],
+										p0_units[it]) <= 20) {
+							keep_distance(p0_units[loop_counter],
+										  p0_units[it]);
+							break;
 						}
 					}
 				}
@@ -1193,9 +1198,14 @@ function distance(u1, u2) {
 					 Math.pow(u1[1] - u2[1], 2));
 }
 
-function random_walk(unit) {
-	unit[3] = unit[0] + Math.random() * 30 - 15; 
-	unit[4] = unit[1] + Math.random() * 30 - 15;
+function keep_distance(u1, u2) {
+	//console.log('random_walk called');
+	//console.log(u2[0] - u1[0]);
+	//console.log(u2[1] - u1[1]);
+	var rand1 = Math.random();
+	var rand2 = Math.random();
+	u1[3] = Math.round(u1[0] - 1.0 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
+	u1[4] = Math.round(u1[1] - 1.0 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 }
 
 function play_audio(id) {
@@ -1888,3 +1898,7 @@ window.onmouseup = function() {
 };
 
 window.onresize = resize;
+
+window.onbeforeunload = function () {
+	return 'Quit?';
+};
