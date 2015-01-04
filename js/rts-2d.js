@@ -10,12 +10,12 @@ function build_robot() {
       p0_buildings[selected_id][0] + p0_buildings[selected_id][2] / 2,// X
       p0_buildings[selected_id][1] + p0_buildings[selected_id][3] / 2,// Y
       0,// Selected?
-      p0_buildings[selected_id][6] != null
-        ? p0_buildings[selected_id][6]
-        : p0_buildings[0][0],// Destination X
-      p0_buildings[selected_id][7] != null
-        ? p0_buildings[selected_id][7]
-        : p0_buildings[0][1],// Destination Y
+      p0_buildings[selected_id][6] != null ?
+			p0_buildings[selected_id][6] :
+			p0_buildings[0][0],// Destination X
+      p0_buildings[selected_id][7] != null ?
+			p0_buildings[selected_id][7] :
+			p0_buildings[0][1],// Destination Y
       0,// Weapon reload
       100,// Health
 	  false,// Moving?
@@ -259,9 +259,9 @@ function draw() {
         // Draw bullets.
         do {
             // Set bullet color to team color.
-            buffer.fillStyle = bullets[loop_counter][4]
-              ? '#f00'
-              : '#0f0';
+            buffer.fillStyle = bullets[loop_counter][4] ?
+				'#f00' :
+				'#0f0';
 
             buffer.fillRect(
               bullets[loop_counter][0] - 5,
@@ -882,18 +882,16 @@ function logic() {
 
                 if (p1_units[loop_counter][0] != p1_units[loop_counter][2]) {
                     p1_units[loop_counter][0] += 
-                      (p1_units[loop_counter][0] > p1_units[loop_counter][2]
-                        ? -j[0]
-                        : j[0]
-                      ) * moving_speed;
+                      (p1_units[loop_counter][0] > p1_units[loop_counter][2] ?
+					   -j[0] :
+					   j[0]) * moving_speed;
                 }
 
                 if (p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
                     p1_units[loop_counter][1] +=
-                      (p1_units[loop_counter][1] > p1_units[loop_counter][3]
-                        ? -j[1]
-                        : j[1]
-                      ) * moving_speed;
+                      (p1_units[loop_counter][1] > p1_units[loop_counter][3] ?
+					   -j[1] :
+					   j[1]) * moving_speed;
                 }
 
                 if (p1_units[loop_counter][0] > p1_units[loop_counter][2] - 5
@@ -938,18 +936,16 @@ function logic() {
 
                 if (p0_units[loop_counter][0] != p0_units[loop_counter][3]) {
                     p0_units[loop_counter][0] +=
-                      (p0_units[loop_counter][0] > p0_units[loop_counter][3]
-                        ? -j[0]
-                        : j[0]
-                      ) * moving_speed;
+						(p0_units[loop_counter][0] > p0_units[loop_counter][3] ?
+						 -j[0] :
+						 j[0]) * moving_speed;
                 }
 
                 if (p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                     p0_units[loop_counter][1] +=
-                      (p0_units[loop_counter][1] > p0_units[loop_counter][4] 
-                        ? -j[1]
-                        : j[1]
-                      ) * moving_speed;
+						(p0_units[loop_counter][1] > p0_units[loop_counter][4] ?
+						 -j[1] :
+						 j[1]) * moving_speed;
                 }
 
                 var fog_counter = fog.length - 1;
@@ -1051,21 +1047,19 @@ function logic() {
             // Move bullet x.
             if (bullets[loop_counter][0] != bullets[loop_counter][2]) {
                 bullets[loop_counter][0] +=
-                  10
-                  * (bullets[loop_counter][0] > bullets[loop_counter][2]
-                    ? -j[0]
-                    : j[0]
-                  );
+					10 *
+					(bullets[loop_counter][0] > bullets[loop_counter][2] ?
+					 -j[0] :
+					 j[0]);
             }
 
             // Move bullet y.
             if (bullets[loop_counter][1] != bullets[loop_counter][3]) {
                 bullets[loop_counter][1] +=
-                  10
-                  * (bullets[loop_counter][1] > bullets[loop_counter][3]
-                    ? -j[1]
-                    : j[1]
-                  );
+					10 *
+					(bullets[loop_counter][1] > bullets[loop_counter][3] ?
+					 -j[1] :
+					 j[1]);
             }
 
             // If bullet reaches destination(in a 10x10 area)
@@ -1208,6 +1202,10 @@ function keep_distance(u1, u2) {
 	//console.log(u2[1] - u1[1]);
 	var rand1 = Math.random();
 	var rand2 = Math.random();
+	// 2 * rand1 and 2 * rand2 is to seperate units
+	// that have exactly the same (x,y)   
+    // you can try using one random number instead of two
+	// it's hard to describe
 	u1[3] = Math.round(u1[3] - 1.0 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
 	u1[4] = Math.round(u1[4] - 1.0 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 }
@@ -1424,8 +1422,8 @@ function get_mouse_position_and_set_destination(on_minimap) {
 
 	// get destination from mouse (x,y)
 	dest_x = on_minimap ?
-		level_size_math * (mouse_x - 100)
-		: mouse_x - x - camera_x;
+		level_size_math * (mouse_x - 100) :
+		mouse_x - x - camera_x;
 
     if (dest_x > settings['level-size']) {
 		dest_x = settings['level-size'];
@@ -1434,8 +1432,8 @@ function get_mouse_position_and_set_destination(on_minimap) {
     }
 
 	dest_y = on_minimap ?
-        level_size_math * (mouse_y - height + 100)
-        : mouse_y - y - camera_y;
+        level_size_math * (mouse_y - height + 100) :
+        mouse_y - y - camera_y;
 
     if (dest_y > settings['level-size']) {
 		dest_y = settings['level-size'];
@@ -1539,6 +1537,7 @@ function setmode(newmode) {
           '#321',
         ][mode - 1];
 
+		world_init();
 
         buffer = document.getElementById('buffer').getContext('2d');
         canvas = document.getElementById('canvas').getContext('2d');
@@ -1569,93 +1568,109 @@ function setmode(newmode) {
 }
 
 function world_init() {
-        world_static = [
-          [
-            -settings['level-size'],
-            -settings['level-size'],
+    world_static = [
+        [
+				-settings['level-size'],
+				-settings['level-size'],
             settings['level-size'] * 2,
             settings['level-size'] * 2,
             [
-              '#765',
-              '#333',
-              '#432',
+				'#765',
+				'#333',
+				'#432',
             ][mode - 1],
-          ],
-        ];
+        ],
+    ];
 
-        // Choose random starting locations.
-        var start_x = Math.floor(Math.random() * 2);
-        var start_y = Math.floor(Math.random() * 2);
+    // Choose random starting locations.
+    var start_x = Math.floor(Math.random() * 2);
+    var start_y = Math.floor(Math.random() * 2);
 
-        // Create player 0 HQ.
-        p0_buildings = [
-          [
-            start_x ? -settings['level-size'] + 25 : settings['level-size'] - 125,// X
-            start_y ? settings['level-size'] - 125 : -settings['level-size'] + 25,// Y
+    // Create player 0 HQ.
+    p0_buildings = [
+        [
+            start_x ?
+				-settings['level-size'] + 25 :
+				settings['level-size'] - 125,// X
+            start_y ?
+				settings['level-size'] - 125 :
+				-settings['level-size'] + 25,// Y
             100,// Width
             100,// Height
             1000,// Health
             0,// Selected
-            start_x ? -settings['level-size'] + 75 : settings['level-size'] - 75,// Destination X
-            start_y ? settings['level-size'] - 75  : -settings['level-size'] + 75,// Destination Y
+            start_x ?
+				-settings['level-size'] + 75 :
+				settings['level-size'] - 75,// Destination X
+            start_y ?
+				settings['level-size'] - 75 :
+				-settings['level-size'] + 75,// Destination Y
             1,// Type
-          ],
-        ];
+        ],
+    ];
 
-        // Create player 1 HQ and Factory.
-        p1_buildings = [
-          [
-            start_x ? settings['level-size'] - 125 : -settings['level-size'] + 25,// X
-            start_y ? -settings['level-size'] + 25 : settings['level-size'] -125,// Y
+    // Create player 1 HQ and Factory.
+    p1_buildings = [
+        [
+            start_x ?
+				settings['level-size'] - 125 :
+				-settings['level-size'] + 25,// X
+            start_y ?
+				-settings['level-size'] + 25 :
+				settings['level-size'] -125,// Y
             100,// Width
             100,// Height
             1000,// Health
             1,// Type
-          ],[
-            start_x ? settings['level-size'] - 250 : -settings['level-size'] + 150,// X
-            start_y ? -settings['level-size'] + 25 : settings['level-size'] -125,// Y
+        ],[
+            start_x ?
+				settings['level-size'] - 250 :
+				-settings['level-size'] + 150,// X
+            start_y ?
+				-settings['level-size'] + 25 :
+				settings['level-size'] -125,// Y
             100,// Width
             100,// Height
             1000,// Health
             2,// Type
-          ],
-        ];
+        ],
+    ];
 
-        // Remove all units.
-        p0_units = [];
-        p1_units = [];
+    // Remove all units.
+    p0_units = [];
+    p1_units = [];
 
-        // Set camera position to HQ location.
-        camera_x = -p0_buildings[0][0] - 50;
-        camera_y = -p0_buildings[0][1] - 50;
+    // Set camera position to HQ location.
+    camera_x = -p0_buildings[0][0] - 50;
+    camera_y = -p0_buildings[0][1] - 50;
 
-        // Add fog of war, if settings allow it.
-        fog = [];
-        if (settings['fog-of-war']) {
-            var temp_x = 0;
-            var temp_y = 0;
-            var times = Math.floor(settings['level-size'] / 50);// Half of level width divided by half of fog unit.
+    // Add fog of war, if settings allow it.
+    fog = [];
+    if (settings['fog-of-war']) {
+        var temp_x = 0;
+        var temp_y = 0;
+        var times = Math.floor(settings['level-size'] / 50);// Half of level width divided by half of fog unit.
 
-            var loop_counter = Math.pow(times, 2) - 1;// True number of fog units to add.
-            do {
-                fog.push([
-                  temp_x * 100,// Fog X
-                  temp_y,// Fog Y
-                ]);
+        var loop_counter = Math.pow(times, 2) - 1;// True number of fog units to add.
+        do {
+            fog.push([
+                temp_x * 100,// Fog X
+                temp_y,// Fog Y
+            ]);
 
-                // Add next fog unit one fog unit space to the right.
-                temp_x += 1;
+            // Add next fog unit one fog unit space to the right.
+            temp_x += 1;
 
-                // Done with this row, move on to the next.
-                if (loop_counter % times == 0) {
-                    temp_y += 100;
-                    temp_x = 0;
-                }
-            } while(loop_counter--);
+            // Done with this row, move on to the next.
+            if (loop_counter % times == 0) {
+                temp_y += 100;
+                temp_x = 0;
+            }
+        } while(loop_counter--);
 
-            // Remove fog around initial buildings.
-            fog_update_building();
-        }
+        // Remove fog around initial buildings.
+        fog_update_building();
+    }
 }
 
 function validate_camera_move(mouse_x, mouse_y) {
@@ -1724,26 +1739,26 @@ var selected_id = -1;
 var selected_type = -1;
 var settings = {
   'audio-volume':
-	window.localStorage.getItem('RTS-2D.htm-audio-volume') === null
-    ? 1
-    : parseFloat(window.localStorage.getItem('RTS-2D.htm-audio-volume')),
+	window.localStorage.getItem('RTS-2D.htm-audio-volume') === null ?
+		1 :
+		parseFloat(window.localStorage.getItem('RTS-2D.htm-audio-volume')),
   'camera-keys':
-	window.localStorage.getItem('RTS-2D.htm-camera-keys') === null
-    ? 'WASD'
-    : window.localStorage.getItem('RTS-2D.htm-camera-keys'),
+	window.localStorage.getItem('RTS-2D.htm-camera-keys') === null ?
+		'WASD' :
+		window.localStorage.getItem('RTS-2D.htm-camera-keys'),
   'fog-of-war': window.localStorage.getItem('RTS-2D.htm-fog-of-war') === null,
   'level-size':
-	window.localStorage.getItem('RTS-2D.htm-level-size') === null
-    ? 1600
-    : parseFloat(window.localStorage.getItem('RTS-2D.htm-level-size')),
+	window.localStorage.getItem('RTS-2D.htm-level-size') === null ?
+		1600 :
+		parseFloat(window.localStorage.getItem('RTS-2D.htm-level-size')),
   'ms-per-frame':
-	window.localStorage.getItem('RTS-2D.htm-ms-per-frame') === null
-    ? 25
-    : parseInt(window.localStorage.getItem('RTS-2D.htm-ms-per-frame')),
+	window.localStorage.getItem('RTS-2D.htm-ms-per-frame') === null ?
+		25 :
+		parseInt(window.localStorage.getItem('RTS-2D.htm-ms-per-frame')),
   'scroll-speed':
-	window.localStorage.getItem('RTS-2D.htm-scroll-speed') === null
-    ? 10
-    : parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
+	window.localStorage.getItem('RTS-2D.htm-scroll-speed') === null ?
+		10 :
+		parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
 };
 var width = 0;
 var world_static = [];
