@@ -18,6 +18,7 @@ function build_robot() {
         : p0_buildings[0][1],// Destination Y
       0,// Weapon reload
       100,// Health
+	  false,// Moving?
     ]);
 }
 
@@ -856,7 +857,7 @@ function logic() {
                                   p1_units[loop_counter][1],// Y
                                   p0_buildings[p0_buildings_counter][0] + 50,// Destination X
                                   p0_buildings[p0_buildings_counter][1] + 50,// Destination Y
-                                  1,// Player
+                                  1,//To Player
                                 ]);
                                 break;
                             }
@@ -911,7 +912,8 @@ function logic() {
     if (loop_counter >= 0) {
         do {
             // If not yet reached destination, move and update fog.
-			if (in_position(p0_units[loop_counter][0],
+			if (in_position(1,
+							p0_units[loop_counter][0],
 							p0_units[loop_counter][1],
 							p0_units[loop_counter][3],
 							p0_units[loop_counter][4])) {
@@ -1003,7 +1005,7 @@ function logic() {
                               p0_units[loop_counter][1],// Y
                               p1_units[p1_units_counter][0],// destination X
                               p1_units[p1_units_counter][1],// destination Y
-                              0// Player
+                              0// To CPU
                             ]);
                             check_for_buildings = false;
                             break;
@@ -1066,11 +1068,13 @@ function logic() {
                   );
             }
 
-            // If bullet reaches destination, check for collisions.
-            if (bullets[loop_counter][0] <= bullets[loop_counter][2] - 10
-              || bullets[loop_counter][0] >= bullets[loop_counter][2] + 10
-              || bullets[loop_counter][1] <= bullets[loop_counter][3] - 10
-              || bullets[loop_counter][1] >= bullets[loop_counter][3] + 10) {
+            // If bullet reaches destination(in a 10x10 area)
+			// check for collisions.
+            if (in_position(10, //in 10x10 area of destination
+							bullets[loop_counter][0],
+							bullets[loop_counter][1],
+							bullets[loop_counter][2],
+							bullets[loop_counter][3])) {
                 continue;
             }
 
@@ -1184,8 +1188,8 @@ function m(x0, y0, x1, y1) {
     }
 }
 
-function in_position(x0, y0, x1, y1) {
-	var res = Math.abs(x0 - x1) <= 1 && Math.abs(y0 - y1) <= 1 ? false : true;
+function in_position(range, x0, y0, x1, y1) {
+	var res = Math.abs(x0 - x1) <= range && Math.abs(y0 - y1) <= range ? false : true;
 	if (heavy_debug_flag) {
 		console.log("in_position?", x0, y0, x1, y1);
 		console.log("in_position?", !res);
@@ -1204,8 +1208,8 @@ function keep_distance(u1, u2) {
 	//console.log(u2[1] - u1[1]);
 	var rand1 = Math.random();
 	var rand2 = Math.random();
-	u1[3] = Math.round(u1[0] - 1.0 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
-	u1[4] = Math.round(u1[1] - 1.0 * rand1 * (u2[1] - u1[1] + 2 * rand2));
+	u1[3] = Math.round(u1[3] - 1.0 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
+	u1[4] = Math.round(u1[4] - 1.0 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 }
 
 function play_audio(id) {
@@ -1292,14 +1296,15 @@ function save() {
 
     // Save level-size setting.
     if (document.getElementById('level-size').value == 1600
-      || isNaN(document.getElementById('level-size').value)
-      || document.getElementById('level-size').value < 200) {
+		|| isNaN(document.getElementById('level-size').value)
+		|| document.getElementById('level-size').value < 200) {
         window.localStorage.removeItem('RTS-2D.htm-level-size');
         document.getElementById('level-size').value = 1600;
         settings['level-size'] = 1600;
 
     } else {
-        settings['level-size'] = parseInt(document.getElementById('level-size').value);
+        settings['level-size'] =
+			parseInt(document.getElementById('level-size').value);
         window.localStorage.setItem(
           'RTS-2D.htm-level-size',
           settings['level-size']
@@ -1308,14 +1313,15 @@ function save() {
 
     // Save ms-per-frame setting.
     if (document.getElementById('ms-per-frame').value == 25
-      || isNaN(document.getElementById('ms-per-frame').value)
-      || document.getElementById('ms-per-frame').value < 1) {
+		|| isNaN(document.getElementById('ms-per-frame').value)
+		|| document.getElementById('ms-per-frame').value < 1) {
         window.localStorage.removeItem('RTS-2D.htm-ms-per-frame');
         document.getElementById('ms-per-frame').value = 25;
         settings['ms-per-frame'] = 25;
 
     } else {
-        settings['ms-per-frame'] = parseInt(document.getElementById('ms-per-frame').value);
+        settings['ms-per-frame'] =
+			parseInt(document.getElementById('ms-per-frame').value);
         window.localStorage.setItem(
           'RTS-2D.htm-ms-per-frame',
           settings['ms-per-frame']
@@ -1324,14 +1330,15 @@ function save() {
 
     // Save scroll-speed setting.
     if (document.getElementById('scroll-speed').value == 10
-      || isNaN(document.getElementById('scroll-speed').value)
-      || document.getElementById('scroll-speed').value < 1) {
+		|| isNaN(document.getElementById('scroll-speed').value)
+		|| document.getElementById('scroll-speed').value < 1) {
         window.localStorage.removeItem('RTS-2D.htm-scroll-speed');
         document.getElementById('scroll-speed').value = 10;
         settings['scroll-speed'] = 10;
 
     } else {
-        settings['scroll-speed'] = parseInt(document.getElementById('scroll-speed').value);
+        settings['scroll-speed'] =
+			parseInt(document.getElementById('scroll-speed').value);
         window.localStorage.setItem(
           'RTS-2D.htm-scroll-speed',
           settings['scroll-speed']
@@ -1347,16 +1354,23 @@ function select() {
     if (loop_counter >= 0) {
         do {
             p0_units[loop_counter][2] = (
-                (mouse_lock_x < x + p0_units[loop_counter][0] + camera_x + 15
-                  && mouse_x > x + p0_units[loop_counter][0] + camera_x - 15)
-                || (mouse_lock_x > x + p0_units[loop_counter][0] + camera_x - 15
-                  && mouse_x < x + p0_units[loop_counter][0] + camera_x + 15)
-              )&&(
-                (mouse_lock_y < y + p0_units[loop_counter][1] + camera_y + 15
-                  && mouse_y > y + p0_units[loop_counter][1] + camera_y - 15)
-                || (mouse_lock_y > y + p0_units[loop_counter][1] + camera_y - 15
-                  && mouse_y < y + p0_units[loop_counter][1] + camera_y + 15)
-              );
+                (mouse_lock_x <
+				 x + p0_units[loop_counter][0] + camera_x + 15
+                 && mouse_x >
+				 x + p0_units[loop_counter][0] + camera_x - 15)
+					|| (mouse_lock_x >
+						x + p0_units[loop_counter][0] + camera_x - 15
+						&& mouse_x <
+						x + p0_units[loop_counter][0] + camera_x + 15)
+            )&&(
+                (mouse_lock_y <
+				 y + p0_units[loop_counter][1] + camera_y + 15
+                 && mouse_y >
+				 y + p0_units[loop_counter][1] + camera_y - 15)
+					|| (mouse_lock_y >
+						y + p0_units[loop_counter][1] + camera_y - 15
+						&& mouse_y <
+						y + p0_units[loop_counter][1] + camera_y + 15));
 
             if (p0_units[loop_counter][2]) {
                 selected_id = loop_counter;
@@ -1370,16 +1384,27 @@ function select() {
         do {
             if (selected_type == -1) {
                 p0_buildings[loop_counter][5] = (
-                    (mouse_lock_x < x + p0_buildings[loop_counter][0] + camera_x + p0_buildings[loop_counter][2]
-                      && mouse_x > x + p0_buildings[loop_counter][0] + camera_x)
-                    || (mouse_lock_x > x + p0_buildings[loop_counter][0] + camera_x
-                      && mouse_x < x + p0_buildings[loop_counter][0] + camera_x + p0_buildings[loop_counter][2])
-                  )&&(
-                    (mouse_lock_y < y + p0_buildings[loop_counter][1] + camera_y + p0_buildings[loop_counter][3]
-                      && mouse_y > y + p0_buildings[loop_counter][1] + camera_y)
-                    || (mouse_lock_y > y + p0_buildings[loop_counter][1] + camera_y
-                      && mouse_y < y + p0_buildings[loop_counter][1] + camera_y + p0_buildings[loop_counter][3])
-                  );
+                    (mouse_lock_x <
+					 x + p0_buildings[loop_counter][0] +
+					 camera_x + p0_buildings[loop_counter][2]
+                     && mouse_x >
+					 x + p0_buildings[loop_counter][0] + camera_x)
+						|| (mouse_lock_x >
+							x + p0_buildings[loop_counter][0] + camera_x
+							&& mouse_x <
+							x + p0_buildings[loop_counter][0] +
+							camera_x + p0_buildings[loop_counter][2])
+                )&&(
+                    (mouse_lock_y <
+					 y + p0_buildings[loop_counter][1] +
+					 camera_y + p0_buildings[loop_counter][3]
+                     && mouse_y >
+					 y + p0_buildings[loop_counter][1] + camera_y)
+						|| (mouse_lock_y >
+							y + p0_buildings[loop_counter][1] + camera_y
+							&& mouse_y <
+							y + p0_buildings[loop_counter][1] +
+							camera_y + p0_buildings[loop_counter][3]));
 
                 if (p0_buildings[loop_counter][5]) {
                     selected_id = loop_counter;
@@ -1393,64 +1418,89 @@ function select() {
     }
 }
 
-function setdestination(on_minimap) {
+function get_mouse_position_and_set_destination(on_minimap) {
 	var loop_counter;
+	var dest_x, dest_y;
+
+	// get destination from mouse (x,y)
+	dest_x = on_minimap ?
+		level_size_math * (mouse_x - 100)
+		: mouse_x - x - camera_x;
+
+    if (dest_x > settings['level-size']) {
+		dest_x = settings['level-size'];
+    } else if (dest_x < -settings['level-size']) {
+		dest_x = settings['level-size'];
+    }
+
+	dest_y = on_minimap ?
+        level_size_math * (mouse_y - height + 100)
+        : mouse_y - y - camera_y;
+
+    if (dest_y > settings['level-size']) {
+		dest_y = settings['level-size'];
+    } else if (dest_y < -settings['level-size']) {
+		dest_y = -settings['level-size'];
+    }
+
+	// find out which units/buidling to set destination
+	var index_to_set_dest = [];
     if (selected_type == 0) {
         loop_counter = p0_units.length - 1;
         if (loop_counter >= 0) {
             do {
+				// if selected
                 if (p0_units[loop_counter][2]) {
-                    p0_units[loop_counter][3] = on_minimap ?
-						level_size_math * (mouse_x - 100)
-						: mouse_x - x - camera_x;
-
-                    if (p0_units[loop_counter][3] > settings['level-size']) {
-                        p0_units[loop_counter][3] = settings['level-size'];
-                    } else if (p0_units[loop_counter][3] < -settings['level-size']) {
-                        p0_units[loop_counter][3] = -settings['level-size'];
-                    }
-
-                    p0_units[loop_counter][4] = on_minimap
-                      ? level_size_math * (mouse_y - height + 100)
-                      : mouse_y - y - camera_y;
-
-                    if (p0_units[loop_counter][4] > settings['level-size']) {
-                        p0_units[loop_counter][4] = settings['level-size'];
-                    } else if (p0_units[loop_counter][4] < -settings['level-size']) {
-                        p0_units[loop_counter][4] = -settings['level-size'];
-                    }
+					//p0_units[loop_counter][3] = dest_x;
+					//p0_units[loop_counter][4] = dest_y;
+					index_to_set_dest.push(loop_counter);
                 }
             } while(loop_counter--);
         }
+		if (debug_flag)
+			console.log("index of unit(s) to set destination: ",
+						index_to_set_dest);
+		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
 
     } else if (selected_type > 1) {
         loop_counter = p0_buildings.length - 1;
         if (loop_counter >= 0) {
             do {
                 if (p0_buildings[loop_counter][5]) {
-                    p0_buildings[loop_counter][6] = on_minimap
-                      ? level_size_math * (mouse_x - 100)
-                      : mouse_x - x - camera_x;
-
-                    if (p0_buildings[loop_counter][6] > settings['level-size']) {
-                        p0_buildings[loop_counter][6] = settings['level-size'];
-                    } else if (p0_buildings[loop_counter][6] < -settings['level-size']) {
-                        p0_buildings[loop_counter][6] = -settings['level-size'];
-                    }
-
-                    p0_buildings[loop_counter][7] = on_minimap
-                      ? level_size_math * (mouse_y - height + 100)
-                      : mouse_y - y - camera_y;
-
-                    if (p0_buildings[loop_counter][7] > settings['level-size']) {
-                        p0_buildings[loop_counter][7] = settings['level-size'];
-                    } else if (p0_buildings[loop_counter][7] < -settings['level-size']) {
-                        p0_buildings[loop_counter][7] = -settings['level-size'];
-                    }
+					index_to_set_dest.push(loop_counter);
                 }
             } while(loop_counter--);
         }
+		if (debug_flag)
+			console.log("index of building(s) to set destination: ",
+						index_to_set_dest);
+		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
     }
+}
+
+// to be on server functions
+function set_destitation(type,
+						 index_of_units_to_set_dest, dest_x, dest_y) {
+	// index of destination: 3,4 for units; 6,7 for buildings
+	console.log(type);
+	var x_index, y_index, it;
+	if (type === 0) {
+		for (it = 0; it < index_of_units_to_set_dest.length; it+=1) {
+			if (debug_flag)
+				console.log("setting destination for unit(s):",
+							index_of_units_to_set_dest[it]);
+			p0_units[index_of_units_to_set_dest[it]][3] = dest_x;
+			p0_units[index_of_units_to_set_dest[it]][4] = dest_y;
+		}
+	} else if (type > 1) {
+		for (it = 0; it < index_of_units_to_set_dest.length; it+=1) {
+			if (debug_flag)
+				console.log("setting destination for buildings(s):",
+							index_of_units_to_set_dest[it]);
+			p0_buildings[index_of_units_to_set_dest[it]][6] = dest_x;
+			p0_buildings[index_of_units_to_set_dest[it]][7] = dest_y;
+		}
+	}
 }
 
 function setmode(newmode) {
@@ -1473,7 +1523,7 @@ function setmode(newmode) {
 
         money = [
           1000,
-          750,
+          10000,
         ];
         mouse_hold = 0;
         mouse_lock_x = -1;
@@ -1489,6 +1539,36 @@ function setmode(newmode) {
           '#321',
         ][mode - 1];
 
+
+        buffer = document.getElementById('buffer').getContext('2d');
+        canvas = document.getElementById('canvas').getContext('2d');
+
+        resize();
+
+        animationFrame = window.requestAnimationFrame(draw);
+        interval = setInterval(
+          'logic()',
+          settings['ms-per-frame']
+        );
+
+		// parse moving speed;
+
+    // Main menu mode.
+    } else {
+        buffer = 0;
+        canvas = 0;
+
+        document.getElementById('page').innerHTML = '<div style=display:inline-block;text-align:left;vertical-align:top><div class=c><b>RTS-2D.htm</b></div><hr><div class=c><b>Skirmish vs AI:</b><ul><li><a onclick=setmode(1)>Island</a><li><a onclick=setmode(2)>Urban</a><li><a onclick=setmode(3)>Wasteland</a></ul></div></div><div style="border-left:8px solid #222;display:inline-block;text-align:left"><div class=c><input id=camera-keys maxlength=4 value='
+          + settings['camera-keys'] + '>Camera ↑←↓→<br><input disabled style=border:0 value=ESC>Main Menu</div><hr><div class=c><input id=audio-volume max=1 min=0 step=.01 type=range value='
+          + settings['audio-volume'] + '>Audio<br><label><input '
+          + (settings['fog-of-war'] ? 'checked ' : '') + 'id=fog-of-war type=checkbox>Fog of War</label><br><input id=level-size value='
+          + settings['level-size'] + '>*2 Level Size<br><input id=ms-per-frame value='
+          + settings['ms-per-frame'] + '>ms/Frame<br><input id=scroll-speed value='
+          + settings['scroll-speed'] + '>Scroll Speed<br><a onclick=reset()>Reset Settings</a></div></div>';
+    }
+}
+
+function world_init() {
         world_static = [
           [
             -settings['level-size'],
@@ -1576,33 +1656,6 @@ function setmode(newmode) {
             // Remove fog around initial buildings.
             fog_update_building();
         }
-
-        buffer = document.getElementById('buffer').getContext('2d');
-        canvas = document.getElementById('canvas').getContext('2d');
-
-        resize();
-
-        animationFrame = window.requestAnimationFrame(draw);
-        interval = setInterval(
-          'logic()',
-          settings['ms-per-frame']
-        );
-
-		// parse moving speed;
-
-    // Main menu mode.
-    } else {
-        buffer = 0;
-        canvas = 0;
-
-        document.getElementById('page').innerHTML = '<div style=display:inline-block;text-align:left;vertical-align:top><div class=c><b>RTS-2D.htm</b></div><hr><div class=c><b>Skirmish vs AI:</b><ul><li><a onclick=setmode(1)>Island</a><li><a onclick=setmode(2)>Urban</a><li><a onclick=setmode(3)>Wasteland</a></ul></div></div><div style="border-left:8px solid #222;display:inline-block;text-align:left"><div class=c><input id=camera-keys maxlength=4 value='
-          + settings['camera-keys'] + '>Camera ↑←↓→<br><input disabled style=border:0 value=ESC>Main Menu</div><hr><div class=c><input id=audio-volume max=1 min=0 step=.01 type=range value='
-          + settings['audio-volume'] + '>Audio<br><label><input '
-          + (settings['fog-of-war'] ? 'checked ' : '') + 'id=fog-of-war type=checkbox>Fog of War</label><br><input id=level-size value='
-          + settings['level-size'] + '>*2 Level Size<br><input id=ms-per-frame value='
-          + settings['ms-per-frame'] + '>ms/Frame<br><input id=scroll-speed value='
-          + settings['scroll-speed'] + '>Scroll Speed<br><a onclick=reset()>Reset Settings</a></div></div>';
-    }
 }
 
 function validate_camera_move(mouse_x, mouse_y) {
@@ -1623,7 +1676,7 @@ function validate_camera_move(mouse_x, mouse_y) {
 
 // debug flag variables
 var debug_flag = true;
-var heavy_debug_flag = false; // print some msg every frame, cost a log of cpu
+var heavy_debug_flag = false; // print some msg every frame(cost a log of cpu)
 var draw_frame_count = 0;
 
 console.log("debug flag", debug_flag);
@@ -1632,11 +1685,9 @@ console.log("debug flag", debug_flag);
 var animationFrame = 0;
 var buffer = 0;
 var build_mode = 0;
-var bullets = [];
 var canvas = 0;
 var camera_x = 0;
 var camera_y = 0;
-var fog = [];
 var height = 0;
 var interval = 0;
 var key_down = false;
@@ -1645,14 +1696,18 @@ var key_right = false;
 var key_up = false;
 var level_size_math = 0;
 var mode = 0;
-var money = [];
 var money_timer = 0;
 var mouse_hold = 0;
 var mouse_lock_x = 0;
 var mouse_lock_y = 0;
 var mouse_x = 0;
 var mouse_y = 0;
-var p0_buildings = []; // [6][7] for destination
+var money = [];
+var fog = [];
+var bullets = [];
+var p0_buildings = [];
+// [5] for selection
+// [6][7] for destination
 var p0_units = [];
 /* p0_units structure
  0/1: current location (x,y)
@@ -1804,6 +1859,7 @@ window.onmousedown = function(e) {
                     building_y = -settings['level-size'];
                 }
 
+				// TODO: build_building function
                 p0_buildings.push(
                   [
                     building_x,
@@ -1833,7 +1889,7 @@ window.onmousedown = function(e) {
 
             // Right click: try to set selected building/unit destination.
             } else if (e.button == 2) {
-                setdestination(false);
+                get_mouse_position_and_set_destination(false);
             }
 
         // Else if HQ is selected, activate build mode.
@@ -1848,7 +1904,7 @@ window.onmousedown = function(e) {
 
     // Right clicking on minimap.
     } else if (e.button == 2) {
-        setdestination(true);
+        get_mouse_position_and_set_destination(true);
 
     // Other clicks: move camera.
     } else {
