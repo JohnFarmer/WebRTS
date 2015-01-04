@@ -1,28 +1,3 @@
-function build_robot() {
-
-    if (money[0] < 100) {
-        return;
-    }
-
-    money[0] -= 100;
-
-    p0_units.push([
-      p0_buildings[selected_id][0] + p0_buildings[selected_id][2] / 2,// X
-      p0_buildings[selected_id][1] + p0_buildings[selected_id][3] / 2,// Y
-      0,// Selected?
-      p0_buildings[selected_id][6] != null ?
-			p0_buildings[selected_id][6] :
-			p0_buildings[0][0],// Destination X
-      p0_buildings[selected_id][7] != null ?
-			p0_buildings[selected_id][7] :
-			p0_buildings[0][1],// Destination Y
-      0,// Weapon reload
-      100,// Health
-	  false,// Moving?
-    ]);
-}
-
-// TODO: Improve clarity.
 function draw() {
 	// what to draw?
     // Draw world static on screen
@@ -708,26 +683,351 @@ function draw() {
     animationFrame = window.requestAnimationFrame(draw);
 }
 
-function fog_update_building() {
-    var loop_counter = p0_buildings.length - 1;
-    do {
-        // Check if each fog unit is within 390px of a building.
-        var fog_counter = fog.length - 1;
-        if (fog_counter >= 0) {
-            do {
-                if (Math.sqrt(Math.pow(p0_buildings[loop_counter][1] - fog[fog_counter][1] + settings['level-size'], 2)
-                    + Math.pow(p0_buildings[loop_counter][0] - fog[fog_counter][0] + settings['level-size'], 2)
-                  ) < 390) {
-                    fog.splice(
-                      fog_counter,
-                      1
-                    );
-                }
-            } while(fog_counter--);
-        }
-    } while(loop_counter--);
+function play_audio(id) {
+    if (settings['audio-volume'] <= 0) {
+        return;
+    }
+
+    document.getElementById(id).currentTime = 0;
+    document.getElementById(id).play();
 }
 
+function reset() {
+    if (!confirm('Reset settings?')) {
+        return;
+    }
+
+    document.getElementById('audio-volume').value = 1;
+    document.getElementById('camera-keys').value = 'WASD';
+    document.getElementById('fog-of-war').checked = true;
+    document.getElementById('level-size').value = 1600;
+    document.getElementById('ms-per-frame').value = 25;
+    document.getElementById('scroll-speed').value = 10;
+
+    save();
+}
+
+function resize() {
+    if (mode <= 0) {
+        return;
+    }
+
+    height = window.innerHeight;
+    document.getElementById('buffer').height = height;
+    document.getElementById('canvas').height = height;
+    y = height / 2;
+
+    width = window.innerWidth;
+    document.getElementById('buffer').width = width;
+    document.getElementById('canvas').width = width;
+    x = width / 2;
+
+	console.log("set (x,y)", x, y);
+}
+
+function save() {
+    // Save audio-volume setting.
+    if (document.getElementById('audio-volume').value === 1) {
+        window.localStorage.removeItem('RTS-2D.htm-audio-volume');
+        settings['audio-volume'] = 1;
+
+    } else {
+        settings['audio-volume'] = parseFloat(document.getElementById('audio-volume').value);
+        window.localStorage.setItem(
+          'RTS-2D.htm-audio-volume',
+          settings['audio-volume']
+        );
+    }
+
+    // Save camera-keys setting.
+    if (document.getElementById('camera-keys').value == 'WASD') {
+        window.localStorage.removeItem('RTS-2D.htm-camera-keys');
+        settings['camera-keys'] = 'WASD';
+
+    } else {
+        settings['camera-keys'] = document.getElementById('camera-keys').value;
+        window.localStorage.setItem(
+          'RTS-2D.htm-camera-keys',
+          settings['camera-keys']
+        );
+    }
+
+    // Save fog-of-war setting.
+    if (document.getElementById('fog-of-war').checked) {
+        window.localStorage.removeItem('RTS-2D.htm-fog-of-war');
+        settings['fog-of-war'] = true;
+
+    } else {
+        settings['fog-of-war'] = false;
+        window.localStorage.setItem(
+          'RTS-2D.htm-fog-of-war',
+          0
+        );
+    }
+
+    // Save level-size setting.
+    if (document.getElementById('level-size').value == 1600
+		|| isNaN(document.getElementById('level-size').value)
+		|| document.getElementById('level-size').value < 200) {
+        window.localStorage.removeItem('RTS-2D.htm-level-size');
+        document.getElementById('level-size').value = 1600;
+        settings['level-size'] = 1600;
+
+    } else {
+        settings['level-size'] =
+			parseInt(document.getElementById('level-size').value);
+        window.localStorage.setItem(
+          'RTS-2D.htm-level-size',
+          settings['level-size']
+        );
+    }
+
+    // Save ms-per-frame setting.
+    if (document.getElementById('ms-per-frame').value == 25
+		|| isNaN(document.getElementById('ms-per-frame').value)
+		|| document.getElementById('ms-per-frame').value < 1) {
+        window.localStorage.removeItem('RTS-2D.htm-ms-per-frame');
+        document.getElementById('ms-per-frame').value = 25;
+        settings['ms-per-frame'] = 25;
+
+    } else {
+        settings['ms-per-frame'] =
+			parseInt(document.getElementById('ms-per-frame').value);
+        window.localStorage.setItem(
+          'RTS-2D.htm-ms-per-frame',
+          settings['ms-per-frame']
+        );
+    }
+
+    // Save scroll-speed setting.
+    if (document.getElementById('scroll-speed').value == 10
+		|| isNaN(document.getElementById('scroll-speed').value)
+		|| document.getElementById('scroll-speed').value < 1) {
+        window.localStorage.removeItem('RTS-2D.htm-scroll-speed');
+        document.getElementById('scroll-speed').value = 10;
+        settings['scroll-speed'] = 10;
+
+    } else {
+        settings['scroll-speed'] =
+			parseInt(document.getElementById('scroll-speed').value);
+        window.localStorage.setItem(
+          'RTS-2D.htm-scroll-speed',
+          settings['scroll-speed']
+        );
+    }
+}
+
+function select() {
+    selected_id = -1;
+    selected_type = -1;
+
+    loop_counter = p0_units.length - 1;
+    if (loop_counter >= 0) {
+        do {
+            p0_units[loop_counter][2] = (
+                (mouse_lock_x <
+				 x + p0_units[loop_counter][0] + camera_x + 15
+                 && mouse_x >
+				 x + p0_units[loop_counter][0] + camera_x - 15)
+					|| (mouse_lock_x >
+						x + p0_units[loop_counter][0] + camera_x - 15
+						&& mouse_x <
+						x + p0_units[loop_counter][0] + camera_x + 15)
+            )&&(
+                (mouse_lock_y <
+				 y + p0_units[loop_counter][1] + camera_y + 15
+                 && mouse_y >
+				 y + p0_units[loop_counter][1] + camera_y - 15)
+					|| (mouse_lock_y >
+						y + p0_units[loop_counter][1] + camera_y - 15
+						&& mouse_y <
+						y + p0_units[loop_counter][1] + camera_y + 15));
+
+            if (p0_units[loop_counter][2]) {
+                selected_id = loop_counter;
+                selected_type = 0;
+            }
+        } while(loop_counter--);
+    }
+
+    loop_counter = p0_buildings.length - 1;
+    if (loop_counter >= 0) {
+        do {
+            if (selected_type == -1) {
+                p0_buildings[loop_counter][5] = (
+                    (mouse_lock_x <
+					 x + p0_buildings[loop_counter][0] +
+					 camera_x + p0_buildings[loop_counter][2]
+                     && mouse_x >
+					 x + p0_buildings[loop_counter][0] + camera_x)
+						|| (mouse_lock_x >
+							x + p0_buildings[loop_counter][0] + camera_x
+							&& mouse_x <
+							x + p0_buildings[loop_counter][0] +
+							camera_x + p0_buildings[loop_counter][2])
+                )&&(
+                    (mouse_lock_y <
+					 y + p0_buildings[loop_counter][1] +
+					 camera_y + p0_buildings[loop_counter][3]
+                     && mouse_y >
+					 y + p0_buildings[loop_counter][1] + camera_y)
+						|| (mouse_lock_y >
+							y + p0_buildings[loop_counter][1] + camera_y
+							&& mouse_y <
+							y + p0_buildings[loop_counter][1] +
+							camera_y + p0_buildings[loop_counter][3]));
+
+                if (p0_buildings[loop_counter][5]) {
+                    selected_id = loop_counter;
+                    selected_type = p0_buildings[loop_counter][8];
+                }
+
+            } else {
+                p0_buildings[loop_counter][5] = 0;
+            }
+        } while(loop_counter--);
+    }
+}
+
+function get_mouse_position_and_set_destination(on_minimap) {
+	var loop_counter;
+	var dest_x, dest_y;
+
+	// get destination from mouse (x,y)
+	dest_x = on_minimap ?
+		level_size_math * (mouse_x - 100) :
+		mouse_x - x - camera_x;
+
+    if (dest_x > settings['level-size']) {
+		dest_x = settings['level-size'];
+    } else if (dest_x < -settings['level-size']) {
+		dest_x = settings['level-size'];
+    }
+
+	dest_y = on_minimap ?
+        level_size_math * (mouse_y - height + 100) :
+        mouse_y - y - camera_y;
+
+    if (dest_y > settings['level-size']) {
+		dest_y = settings['level-size'];
+    } else if (dest_y < -settings['level-size']) {
+		dest_y = -settings['level-size'];
+    }
+
+	// find out which units/buidling to set destination
+	var index_to_set_dest = [];
+    if (selected_type == 0) {
+        loop_counter = p0_units.length - 1;
+        if (loop_counter >= 0) {
+            do {
+				// if selected
+                if (p0_units[loop_counter][2]) {
+					//p0_units[loop_counter][3] = dest_x;
+					//p0_units[loop_counter][4] = dest_y;
+					index_to_set_dest.push(loop_counter);
+                }
+            } while(loop_counter--);
+        }
+		if (debug_flag)
+			console.log("index of unit(s) to set destination: ",
+						index_to_set_dest);
+		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
+
+    } else if (selected_type > 1) {
+        loop_counter = p0_buildings.length - 1;
+        if (loop_counter >= 0) {
+            do {
+                if (p0_buildings[loop_counter][5]) {
+					index_to_set_dest.push(loop_counter);
+                }
+            } while(loop_counter--);
+        }
+		if (debug_flag)
+			console.log("index of building(s) to set destination: ",
+						index_to_set_dest);
+		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
+    }
+}
+
+function validate_camera_move(mouse_x, mouse_y) {
+    camera_x = -level_size_math * (mouse_x - 100);
+    if (camera_x > settings['level-size']) {
+        camera_x = settings['level-size'];
+    } else if (camera_x < -settings['level-size']) {
+        camera_x = -settings['level-size'];
+    }
+
+    camera_y = -level_size_math * (mouse_y - height + 100);
+    if (camera_y > settings['level-size']) {
+        camera_y = settings['level-size'];
+    } else if (camera_y < -settings['level-size']) {
+        camera_y = -settings['level-size'];
+    }
+}
+
+function setmode(newmode) {
+    window.cancelAnimationFrame(animationFrame);
+    clearInterval(interval);
+
+    bullets = [];
+    mode = newmode;
+
+    // New game mode.
+    if (mode > 0) {
+        save();
+
+        key_down = false;
+        key_left = false;
+        key_right = false;
+        key_up = false;
+
+        level_size_math = settings['level-size'] / 100;
+
+        mouse_hold = 0;
+        mouse_lock_x = -1;
+        mouse_lock_y = -1;
+        mouse_x = -1;
+        mouse_y = -1;
+        selected_type = -1;
+
+        document.getElementById('page').innerHTML = '<canvas id=canvas oncontextmenu="return false"></canvas><canvas id=buffer style=display:none></canvas>';
+        document.getElementById('canvas').style.background = [
+          '#277',
+          '#444',
+          '#321',
+        ][mode - 1];
+
+		world_init();
+
+        buffer = document.getElementById('buffer').getContext('2d');
+        canvas = document.getElementById('canvas').getContext('2d');
+
+        resize();
+
+        animationFrame = window.requestAnimationFrame(draw);
+        interval = setInterval(
+          'logic()',
+          settings['ms-per-frame']
+        );
+
+		// parse moving speed;
+
+    // Main menu mode.
+    } else {
+        buffer = 0;
+        canvas = 0;
+
+        document.getElementById('page').innerHTML = '<div style=display:inline-block;text-align:left;vertical-align:top><div class=c><b>RTS-2D.htm</b></div><hr><div class=c><b>Skirmish vs AI:</b><ul><li><a onclick=setmode(1)>Island</a><li><a onclick=setmode(2)>Urban</a><li><a onclick=setmode(3)>Wasteland</a></ul></div></div><div style="border-left:8px solid #222;display:inline-block;text-align:left"><div class=c><input id=camera-keys maxlength=4 value='
+          + settings['camera-keys'] + '>Camera ↑←↓→<br><input disabled style=border:0 value=ESC>Main Menu</div><hr><div class=c><input id=audio-volume max=1 min=0 step=.01 type=range value='
+          + settings['audio-volume'] + '>Audio<br><label><input '
+          + (settings['fog-of-war'] ? 'checked ' : '') + 'id=fog-of-war type=checkbox>Fog of War</label><br><input id=level-size value='
+          + settings['level-size'] + '>*2 Level Size<br><input id=ms-per-frame value='
+          + settings['ms-per-frame'] + '>ms/Frame<br><input id=scroll-speed value='
+          + settings['scroll-speed'] + '>Scroll Speed<br><a onclick=reset()>Reset Settings</a></div></div>';
+    }
+}
+
+// to be on server functions
 function logic() {
 	// logic to do:
 	////// basic
@@ -1166,7 +1466,82 @@ function logic() {
     }
 }
 
-// TODO: Improve clarity.
+function build_robot() {
+
+    if (money[0] < 100) {
+        return;
+    }
+
+    money[0] -= 100;
+
+    p0_units.push([
+      p0_buildings[selected_id][0] + p0_buildings[selected_id][2] / 2,// X
+      p0_buildings[selected_id][1] + p0_buildings[selected_id][3] / 2,// Y
+      0,// Selected?
+      p0_buildings[selected_id][6] != null ?
+			p0_buildings[selected_id][6] :
+			p0_buildings[0][0],// Destination X
+      p0_buildings[selected_id][7] != null ?
+			p0_buildings[selected_id][7] :
+			p0_buildings[0][1],// Destination Y
+      0,// Weapon reload
+      100,// Health
+	  false,// Moving?
+    ]);
+}
+
+function build_building(type, building_x, building_y) {
+	if (type === 2) {
+		if (money[0] < 250) {
+			return;
+		}
+
+
+		money[0] -= 250;
+
+		p0_buildings.push(
+			[
+				building_x,
+				building_y,
+				100,// Width
+				100,// Height
+				1000,// Health
+				0,// Selected
+				building_x + 50,// Destination X
+				building_y + 50,// Destination Y
+				2,// Type
+			]
+		);
+
+		// Remove fog around buildings.
+		fog_update_building();
+	} else if (type === 3) {
+		
+	} else {
+		console.log("Unknown Building Type", type);
+	}
+}
+
+function fog_update_building() {
+    var loop_counter = p0_buildings.length - 1;
+    do {
+        // Check if each fog unit is within 390px of a building.
+        var fog_counter = fog.length - 1;
+        if (fog_counter >= 0) {
+            do {
+                if (Math.sqrt(Math.pow(p0_buildings[loop_counter][1] - fog[fog_counter][1] + settings['level-size'], 2)
+                    + Math.pow(p0_buildings[loop_counter][0] - fog[fog_counter][0] + settings['level-size'], 2)
+                  ) < 390) {
+                    fog.splice(
+                      fog_counter,
+                      1
+                    );
+                }
+            } while(fog_counter--);
+        }
+    } while(loop_counter--);
+}
+
 function m(x0, y0, x1, y1) {
     var j0 = Math.abs(x0 - x1);
     var j1 = Math.abs(y0 - y1);
@@ -1206,277 +1581,10 @@ function keep_distance(u1, u2) {
 	// that have exactly the same (x,y)   
     // you can try using one random number instead of two
 	// it's hard to describe
-	u1[3] = Math.round(u1[3] - 1.0 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
-	u1[4] = Math.round(u1[4] - 1.0 * rand1 * (u2[1] - u1[1] + 2 * rand2));
+	u1[3] = Math.round(u1[3] - 0.7 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
+	u1[4] = Math.round(u1[4] - 0.7 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 }
 
-function play_audio(id) {
-    if (settings['audio-volume'] <= 0) {
-        return;
-    }
-
-    document.getElementById(id).currentTime = 0;
-    document.getElementById(id).play();
-}
-
-function reset() {
-    if (!confirm('Reset settings?')) {
-        return;
-    }
-
-    document.getElementById('audio-volume').value = 1;
-    document.getElementById('camera-keys').value = 'WASD';
-    document.getElementById('fog-of-war').checked = true;
-    document.getElementById('level-size').value = 1600;
-    document.getElementById('ms-per-frame').value = 25;
-    document.getElementById('scroll-speed').value = 10;
-
-    save();
-}
-
-function resize() {
-    if (mode <= 0) {
-        return;
-    }
-
-    height = window.innerHeight;
-    document.getElementById('buffer').height = height;
-    document.getElementById('canvas').height = height;
-    y = height / 2;
-
-    width = window.innerWidth;
-    document.getElementById('buffer').width = width;
-    document.getElementById('canvas').width = width;
-    x = width / 2;
-
-	console.log("set (x,y)", x, y);
-}
-
-function save() {
-    // Save audio-volume setting.
-    if (document.getElementById('audio-volume').value === 1) {
-        window.localStorage.removeItem('RTS-2D.htm-audio-volume');
-        settings['audio-volume'] = 1;
-
-    } else {
-        settings['audio-volume'] = parseFloat(document.getElementById('audio-volume').value);
-        window.localStorage.setItem(
-          'RTS-2D.htm-audio-volume',
-          settings['audio-volume']
-        );
-    }
-
-    // Save camera-keys setting.
-    if (document.getElementById('camera-keys').value == 'WASD') {
-        window.localStorage.removeItem('RTS-2D.htm-camera-keys');
-        settings['camera-keys'] = 'WASD';
-
-    } else {
-        settings['camera-keys'] = document.getElementById('camera-keys').value;
-        window.localStorage.setItem(
-          'RTS-2D.htm-camera-keys',
-          settings['camera-keys']
-        );
-    }
-
-    // Save fog-of-war setting.
-    if (document.getElementById('fog-of-war').checked) {
-        window.localStorage.removeItem('RTS-2D.htm-fog-of-war');
-        settings['fog-of-war'] = true;
-
-    } else {
-        settings['fog-of-war'] = false;
-        window.localStorage.setItem(
-          'RTS-2D.htm-fog-of-war',
-          0
-        );
-    }
-
-    // Save level-size setting.
-    if (document.getElementById('level-size').value == 1600
-		|| isNaN(document.getElementById('level-size').value)
-		|| document.getElementById('level-size').value < 200) {
-        window.localStorage.removeItem('RTS-2D.htm-level-size');
-        document.getElementById('level-size').value = 1600;
-        settings['level-size'] = 1600;
-
-    } else {
-        settings['level-size'] =
-			parseInt(document.getElementById('level-size').value);
-        window.localStorage.setItem(
-          'RTS-2D.htm-level-size',
-          settings['level-size']
-        );
-    }
-
-    // Save ms-per-frame setting.
-    if (document.getElementById('ms-per-frame').value == 25
-		|| isNaN(document.getElementById('ms-per-frame').value)
-		|| document.getElementById('ms-per-frame').value < 1) {
-        window.localStorage.removeItem('RTS-2D.htm-ms-per-frame');
-        document.getElementById('ms-per-frame').value = 25;
-        settings['ms-per-frame'] = 25;
-
-    } else {
-        settings['ms-per-frame'] =
-			parseInt(document.getElementById('ms-per-frame').value);
-        window.localStorage.setItem(
-          'RTS-2D.htm-ms-per-frame',
-          settings['ms-per-frame']
-        );
-    }
-
-    // Save scroll-speed setting.
-    if (document.getElementById('scroll-speed').value == 10
-		|| isNaN(document.getElementById('scroll-speed').value)
-		|| document.getElementById('scroll-speed').value < 1) {
-        window.localStorage.removeItem('RTS-2D.htm-scroll-speed');
-        document.getElementById('scroll-speed').value = 10;
-        settings['scroll-speed'] = 10;
-
-    } else {
-        settings['scroll-speed'] =
-			parseInt(document.getElementById('scroll-speed').value);
-        window.localStorage.setItem(
-          'RTS-2D.htm-scroll-speed',
-          settings['scroll-speed']
-        );
-    }
-}
-
-function select() {
-    selected_id = -1;
-    selected_type = -1;
-
-    loop_counter = p0_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            p0_units[loop_counter][2] = (
-                (mouse_lock_x <
-				 x + p0_units[loop_counter][0] + camera_x + 15
-                 && mouse_x >
-				 x + p0_units[loop_counter][0] + camera_x - 15)
-					|| (mouse_lock_x >
-						x + p0_units[loop_counter][0] + camera_x - 15
-						&& mouse_x <
-						x + p0_units[loop_counter][0] + camera_x + 15)
-            )&&(
-                (mouse_lock_y <
-				 y + p0_units[loop_counter][1] + camera_y + 15
-                 && mouse_y >
-				 y + p0_units[loop_counter][1] + camera_y - 15)
-					|| (mouse_lock_y >
-						y + p0_units[loop_counter][1] + camera_y - 15
-						&& mouse_y <
-						y + p0_units[loop_counter][1] + camera_y + 15));
-
-            if (p0_units[loop_counter][2]) {
-                selected_id = loop_counter;
-                selected_type = 0;
-            }
-        } while(loop_counter--);
-    }
-
-    loop_counter = p0_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            if (selected_type == -1) {
-                p0_buildings[loop_counter][5] = (
-                    (mouse_lock_x <
-					 x + p0_buildings[loop_counter][0] +
-					 camera_x + p0_buildings[loop_counter][2]
-                     && mouse_x >
-					 x + p0_buildings[loop_counter][0] + camera_x)
-						|| (mouse_lock_x >
-							x + p0_buildings[loop_counter][0] + camera_x
-							&& mouse_x <
-							x + p0_buildings[loop_counter][0] +
-							camera_x + p0_buildings[loop_counter][2])
-                )&&(
-                    (mouse_lock_y <
-					 y + p0_buildings[loop_counter][1] +
-					 camera_y + p0_buildings[loop_counter][3]
-                     && mouse_y >
-					 y + p0_buildings[loop_counter][1] + camera_y)
-						|| (mouse_lock_y >
-							y + p0_buildings[loop_counter][1] + camera_y
-							&& mouse_y <
-							y + p0_buildings[loop_counter][1] +
-							camera_y + p0_buildings[loop_counter][3]));
-
-                if (p0_buildings[loop_counter][5]) {
-                    selected_id = loop_counter;
-                    selected_type = p0_buildings[loop_counter][8];
-                }
-
-            } else {
-                p0_buildings[loop_counter][5] = 0;
-            }
-        } while(loop_counter--);
-    }
-}
-
-function get_mouse_position_and_set_destination(on_minimap) {
-	var loop_counter;
-	var dest_x, dest_y;
-
-	// get destination from mouse (x,y)
-	dest_x = on_minimap ?
-		level_size_math * (mouse_x - 100) :
-		mouse_x - x - camera_x;
-
-    if (dest_x > settings['level-size']) {
-		dest_x = settings['level-size'];
-    } else if (dest_x < -settings['level-size']) {
-		dest_x = settings['level-size'];
-    }
-
-	dest_y = on_minimap ?
-        level_size_math * (mouse_y - height + 100) :
-        mouse_y - y - camera_y;
-
-    if (dest_y > settings['level-size']) {
-		dest_y = settings['level-size'];
-    } else if (dest_y < -settings['level-size']) {
-		dest_y = -settings['level-size'];
-    }
-
-	// find out which units/buidling to set destination
-	var index_to_set_dest = [];
-    if (selected_type == 0) {
-        loop_counter = p0_units.length - 1;
-        if (loop_counter >= 0) {
-            do {
-				// if selected
-                if (p0_units[loop_counter][2]) {
-					//p0_units[loop_counter][3] = dest_x;
-					//p0_units[loop_counter][4] = dest_y;
-					index_to_set_dest.push(loop_counter);
-                }
-            } while(loop_counter--);
-        }
-		if (debug_flag)
-			console.log("index of unit(s) to set destination: ",
-						index_to_set_dest);
-		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
-
-    } else if (selected_type > 1) {
-        loop_counter = p0_buildings.length - 1;
-        if (loop_counter >= 0) {
-            do {
-                if (p0_buildings[loop_counter][5]) {
-					index_to_set_dest.push(loop_counter);
-                }
-            } while(loop_counter--);
-        }
-		if (debug_flag)
-			console.log("index of building(s) to set destination: ",
-						index_to_set_dest);
-		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
-    }
-}
-
-// to be on server functions
 function set_destitation(type,
 						 index_of_units_to_set_dest, dest_x, dest_y) {
 	// index of destination: 3,4 for units; 6,7 for buildings
@@ -1501,73 +1609,13 @@ function set_destitation(type,
 	}
 }
 
-function setmode(newmode) {
-    window.cancelAnimationFrame(animationFrame);
-    clearInterval(interval);
-
-    bullets = [];
-    mode = newmode;
-
-    // New game mode.
-    if (mode > 0) {
-        save();
-
-        key_down = false;
-        key_left = false;
-        key_right = false;
-        key_up = false;
-
-        level_size_math = settings['level-size'] / 100;
-
-        money = [
-          1000,
-          10000,
-        ];
-        mouse_hold = 0;
-        mouse_lock_x = -1;
-        mouse_lock_y = -1;
-        mouse_x = -1;
-        mouse_y = -1;
-        selected_type = -1;
-
-        document.getElementById('page').innerHTML = '<canvas id=canvas oncontextmenu="return false"></canvas><canvas id=buffer style=display:none></canvas>';
-        document.getElementById('canvas').style.background = [
-          '#277',
-          '#444',
-          '#321',
-        ][mode - 1];
-
-		world_init();
-
-        buffer = document.getElementById('buffer').getContext('2d');
-        canvas = document.getElementById('canvas').getContext('2d');
-
-        resize();
-
-        animationFrame = window.requestAnimationFrame(draw);
-        interval = setInterval(
-          'logic()',
-          settings['ms-per-frame']
-        );
-
-		// parse moving speed;
-
-    // Main menu mode.
-    } else {
-        buffer = 0;
-        canvas = 0;
-
-        document.getElementById('page').innerHTML = '<div style=display:inline-block;text-align:left;vertical-align:top><div class=c><b>RTS-2D.htm</b></div><hr><div class=c><b>Skirmish vs AI:</b><ul><li><a onclick=setmode(1)>Island</a><li><a onclick=setmode(2)>Urban</a><li><a onclick=setmode(3)>Wasteland</a></ul></div></div><div style="border-left:8px solid #222;display:inline-block;text-align:left"><div class=c><input id=camera-keys maxlength=4 value='
-          + settings['camera-keys'] + '>Camera ↑←↓→<br><input disabled style=border:0 value=ESC>Main Menu</div><hr><div class=c><input id=audio-volume max=1 min=0 step=.01 type=range value='
-          + settings['audio-volume'] + '>Audio<br><label><input '
-          + (settings['fog-of-war'] ? 'checked ' : '') + 'id=fog-of-war type=checkbox>Fog of War</label><br><input id=level-size value='
-          + settings['level-size'] + '>*2 Level Size<br><input id=ms-per-frame value='
-          + settings['ms-per-frame'] + '>ms/Frame<br><input id=scroll-speed value='
-          + settings['scroll-speed'] + '>Scroll Speed<br><a onclick=reset()>Reset Settings</a></div></div>';
-    }
-}
 
 function world_init() {
+    money = [
+        1000,
+        10000,
+    ];
+
     world_static = [
         [
 				-settings['level-size'],
@@ -1673,21 +1721,6 @@ function world_init() {
     }
 }
 
-function validate_camera_move(mouse_x, mouse_y) {
-    camera_x = -level_size_math * (mouse_x - 100);
-    if (camera_x > settings['level-size']) {
-        camera_x = settings['level-size'];
-    } else if (camera_x < -settings['level-size']) {
-        camera_x = -settings['level-size'];
-    }
-
-    camera_y = -level_size_math * (mouse_y - height + 100);
-    if (camera_y > settings['level-size']) {
-        camera_y = settings['level-size'];
-    } else if (camera_y < -settings['level-size']) {
-        camera_y = -settings['level-size'];
-    }
-}
 
 // debug flag variables
 var debug_flag = true;
@@ -1852,46 +1885,26 @@ window.onmousedown = function(e) {
         // Check if in buildling mode.
         if (build_mode > 0) {
             // Build a factory.
-            if (money[0] >= 250) {
-                build_mode = 0;
-				console.log("build mode = 0");
+            // Make sure building is within buildable limit.
 
-                money[0] -= 250;
-
-                // Make sure building is within buildable limit.
-                var building_x = mouse_x - camera_x - x - 50;
-                if (building_x > settings['level-size'] - 100) {
-                    building_x = settings['level-size'] - 100;
-                } else if (building_x < -settings['level-size']) {
-                    building_x = -settings['level-size'];
-                }
-
-                var building_y = mouse_y - camera_y - y - 50;
-                if (building_y > settings['level-size'] - 100) {
-                    building_y = settings['level-size'] - 100;
-
-                } else if (building_y < -settings['level-size']) {
-                    building_y = -settings['level-size'];
-                }
-
-				// TODO: build_building function
-                p0_buildings.push(
-                  [
-                    building_x,
-                    building_y,
-                    100,// Width
-                    100,// Height
-                    1000,// Health
-                    0,// Selected
-                    building_x + 50,// Destination X
-                    building_y + 50,// Destination Y
-                    2,// Type
-                  ]
-                );
-
-                // Remove fog around buildings.
-                fog_update_building();
+            var building_x = mouse_x - camera_x - x - 50;
+            if (building_x > settings['level-size'] - 100) {
+                building_x = settings['level-size'] - 100;
+            } else if (building_x < -settings['level-size']) {
+                building_x = -settings['level-size'];
             }
+
+            var building_y = mouse_y - camera_y - y - 50;
+            if (building_y > settings['level-size'] - 100) {
+                building_y = settings['level-size'] - 100;
+            } else if (building_y < -settings['level-size']) {
+                building_y = -settings['level-size'];
+            }
+
+			// TODO: build_building function
+			build_mode = 0;
+			console.log("build mode = 0");
+			build_building(2, building_x, building_y);
 
         // If unit selected or not clicking on build robot button.
         } else if (selected_type < 1
