@@ -1,3 +1,25 @@
+// websocket
+try {
+    var sock = new WebSocket("ws://localhost:1234/sock");
+    //sock.binaryType = 'blob'; // can set it to 'blob' or 'arraybuffer 
+    console.log("Websocket - status: " + sock.readyState);
+    sock.onopen = function(m) { 
+        console.log("CONNECTION opened..." + this.readyState);
+	};
+    sock.onmessage = function(m) { 
+        console.log(m.data);
+	};
+    sock.onerror = function(m) {
+        console.log("Error occured sending..." + m.data);
+	};
+    sock.onclose = function(m) { 
+        console.log("Disconnected - status " + this.readyState);
+	};
+} catch(exception) {
+    console.log(exception);
+}
+
+
 function draw() {
 	// what to draw?
     // Draw world static on screen

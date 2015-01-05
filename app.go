@@ -3,10 +3,9 @@ package main
 import (
 	"log"
 	"strconv"
-	//"fmt"
 
 	"net/http"
-	//"html/template"
+	"./sockserver"
 )
 
 var (
@@ -26,6 +25,8 @@ func main() {
 	http.Handle("/",
 		http.StripPrefix("/",
 			http.FileServer(http.Dir(web_resources_prefix))))
+
+	sockserver.Start()
 	
 	http.ListenAndServe("localhost:" + strconv.Itoa(port), nil)
 }
