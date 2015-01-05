@@ -38,10 +38,21 @@ func SockServer(ws *websocket.Conn) {
 	ActiveClients[sockCli] = 0
 	log.Println("Number of clients connected ...", len(ActiveClients))
 
+
 	// for loop so the websocket stays open otherwise
 	// it'll close after one Receieve and Send
 	for {
+		if err = Message.Receive(ws, &clientMessage); err != nil {
+			// If we cannot Read then the connection is closed
+			log.Println("Websocket Disconnected waiting", err.Error())
+			// remove the ws client conn from our active clients
+			delete(ActiveClients, sockCli)
+			log.Println("Number of clients still connected ...", len(ActiveClients))
+			return
+		}
+
 		time.Sleep(40 * time.Millisecond)
+
 		clientMessage = "sending msg"
 		for cs, _ := range ActiveClients {
 			if err = Message.Send(cs.websocket, clientMessage); err != nil {

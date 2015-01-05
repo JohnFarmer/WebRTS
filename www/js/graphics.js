@@ -62,7 +62,7 @@ function draw() {
                 continue;
             }
 
-            buffer.fillStyle = world_static[loop_counter][4];
+            buffer.fillStyle = battlefield_color[world_static[loop_counter][4]];
             buffer.fillRect(
               world_static[loop_counter][0],
               world_static[loop_counter][1],
@@ -426,7 +426,7 @@ function draw() {
     );
 
     // Draw minimap background.
-    buffer.fillStyle = world_static[0][4];
+    buffer.fillStyle = battlefield_color[world_static[0][4]];
     buffer.fillRect(
       0,
       height - 200,
@@ -824,7 +824,7 @@ function select() {
     loop_counter = p0_units.length - 1;
     if (loop_counter >= 0) {
         do {
-            p0_units[loop_counter][2] = (
+            p0_units[loop_counter][2] = ((
                 (mouse_lock_x <
 				 x + p0_units[loop_counter][0] + camera_x + 15
                  && mouse_x >
@@ -841,7 +841,8 @@ function select() {
 					|| (mouse_lock_y >
 						y + p0_units[loop_counter][1] + camera_y - 15
 						&& mouse_y <
-						y + p0_units[loop_counter][1] + camera_y + 15));
+						y + p0_units[loop_counter][1] + camera_y + 15))) ?
+				1 : 0;
 
             if (p0_units[loop_counter][2]) {
                 selected_id = loop_counter;
@@ -972,7 +973,7 @@ function setmode(newmode) {
     bullets = [];
     mode = newmode;
 
-    // New game mode.
+    // New game mode.(is actually three color scheme now)
     if (mode > 0) {
         save();
 
@@ -991,11 +992,7 @@ function setmode(newmode) {
         selected_type = -1;
 
         document.getElementById('page').innerHTML = '<canvas id=canvas oncontextmenu="return false"></canvas><canvas id=buffer style=display:none></canvas>';
-        document.getElementById('canvas').style.background = [
-          '#277',
-          '#444',
-          '#321',
-        ][mode - 1];
+        document.getElementById('canvas').style.background = background_color[mode - 1];
 
 		world_init();
 
@@ -1212,3 +1209,6 @@ window.onresize = resize;
 window.onbeforeunload = function () {
 	return 'Quit?';
 };
+
+var battlefield_color = ['#765', '#333', '#432'];
+var background_color = ['#277', '#444', '#321'];

@@ -196,7 +196,7 @@ function logic() {
 						  p0_units[loop_counter][3],
 						  p0_units[loop_counter][4])) {
 				// mark that unit is moving
-				p0_units[loop_counter][7] = true;
+				p0_units[loop_counter][7] = 1;
 
                 var j = m(
                   p0_units[loop_counter][0],
@@ -250,7 +250,7 @@ function logic() {
 				// units should not too close to each other
 
 				//mark unit is not moving
-				p0_units[loop_counter][7] = false;
+				p0_units[loop_counter][7] = 0;
 				for (var it = 0; it< p0_units.length; it += 1) {
 					if (it == loop_counter) {
 
@@ -468,7 +468,7 @@ function build_robot() {
 			p0_buildings[0][1],// Destination Y
       0,// Weapon reload
       100,// Health
-	  false,// Moving?
+	  0,// Moving?
     ]);
 }
 
@@ -607,11 +607,7 @@ function world_init() {
 				-settings['level-size'],
             settings['level-size'] * 2,
             settings['level-size'] * 2,
-            [
-				'#765',
-				'#333',
-				'#432',
-            ][mode - 1],
+            mode - 1,
         ],
     ];
 
@@ -752,6 +748,7 @@ var p0_units = [];
 */
 var p1_buildings = [];
 var p1_units = [];
+var world_static = [];
 var pi_times_two = Math.PI * 2;
 var selected_id = -1;
 var selected_type = -1;
@@ -779,7 +776,6 @@ var settings = {
 		parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
 };
 var width = 0;
-var world_static = [];
 var x = 0;
 var y = 0;
 var moving_speed = 0.75;
