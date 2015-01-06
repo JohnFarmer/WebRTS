@@ -1,0 +1,26 @@
+{
+	"name": "WebRTS",
+	"version": "0.0.1",
+	"description": "A Simple RTS Game Based on WebSocket",
+	"main": "app.js",
+	"dependencies" : {
+		"express" : "*"
+	},
+	"scripts": {
+		"test": "node app.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JohnFarmer/WebRTS"
+	},
+
+	"keywords": [
+		"rts",
+		"websocket"
+	],
+	"author": "JohnFarmer",
+	"license": "CC0",
+	"bugs": {
+		"url": "https://github.com/JohnFarmer/Round/issues"
+	}
+}
