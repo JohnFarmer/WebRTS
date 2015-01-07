@@ -4,7 +4,8 @@
 	"description": "A Simple RTS Game Based on WebSocket",
 	"main": "app.js",
 	"dependencies" : {
-		"express" : "*"
+		"express" : "*",
+		"websocket" : "*"
 	},
 	"scripts": {
 		"test": "node app.js"

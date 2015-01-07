@@ -785,7 +785,7 @@ setmode(0);
 
 //websocket
 try {
-    var sock = new WebSocket("ws://localhost:1234/sock");
+    var sock = new WebSocket("ws://localhost:1234");
     //sock.binaryType = 'blob'; // can set it to 'blob' or 'arraybuffer 
     console.log("Websocket - status: " + sock.readyState);
     sock.onopen = function(m) { 
@@ -793,6 +793,7 @@ try {
 	};
     sock.onmessage = function(m) { 
         console.log(m.data);
+		console.log(JSON.parse(m.data));
 	};
     sock.onerror = function(m) {
         console.log("Error occured sending..." + m.data);
@@ -803,3 +804,7 @@ try {
 } catch(exception) {
     console.log(exception);
 }
+
+sock.sendmsg = function(msg) {
+	sock.send(JSON.stringify(msg));
+};

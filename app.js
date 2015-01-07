@@ -12,4 +12,9 @@ app.get(/^\/((?:js|css|img|public)\/.+)$/, function(req ,res) {
 	res.sendFile(dir_name + 'www/' + req.params[0]);
 });
 
-server = require('http').createServer(app).listen(8080);
+var server = require('http').createServer(app);
+
+server.listen(1234);
+
+var sockserver = require(__dirname + '/sockserver/sock.js');
+sockserver(server);
