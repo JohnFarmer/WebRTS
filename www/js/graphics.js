@@ -916,37 +916,36 @@ function get_mouse_position_and_set_destination(on_minimap) {
     }
 
 	// find out which units/buidling to set destination
-	var index_to_set_dest = [];
     if (selected_type == 0) {
         loop_counter = p0_units.length - 1;
         if (loop_counter >= 0) {
             do {
 				// if selected
                 if (p0_units[loop_counter][2]) {
-					//p0_units[loop_counter][3] = dest_x;
-					//p0_units[loop_counter][4] = dest_y;
-					index_to_set_dest.push(loop_counter);
+					if (debug_flag)
+						console.log("index of unit to set destination: ",
+									loop_counter);
+					set_destitation(selected_type,
+									loop_counter,
+									dest_x, dest_y);
                 }
             } while(loop_counter--);
         }
-		if (debug_flag)
-			console.log("index of unit(s) to set destination: ",
-						index_to_set_dest);
-		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
 
     } else if (selected_type > 1) {
         loop_counter = p0_buildings.length - 1;
         if (loop_counter >= 0) {
             do {
                 if (p0_buildings[loop_counter][5]) {
-					index_to_set_dest.push(loop_counter);
+					if (debug_flag)
+						console.log("index of building to set destination: ",
+									loop_counter);
+					set_destitation(selected_type,
+									loop_counter,
+									dest_x, dest_y);
                 }
             } while(loop_counter--);
         }
-		if (debug_flag)
-			console.log("index of building(s) to set destination: ",
-						index_to_set_dest);
-		set_destitation(selected_type, index_to_set_dest, dest_x, dest_y);
     }
 }
 
@@ -975,6 +974,11 @@ function setmode(newmode) {
 
     // New game mode.(is actually three color scheme now)
     if (mode > 0) {
+		sendJSON({
+			'command' : 'new_game',
+			'mode' : mode,
+			'settings' : settings
+				 });
         save();
 
         key_down = false;

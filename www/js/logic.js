@@ -3,6 +3,7 @@ function logic() {
 	////// basic
 	// money (2.5s for 1$)
 	// camera
+
     // Handle selection box.
     // If reloading, decrease reload,...
 
@@ -23,13 +24,7 @@ function logic() {
     // Move bullet x.
     // Move bullet y.
     // If bullet reaches destination, check for collisions.
-
-    money_timer += 1;
-    if (money_timer > 99) {
-        money_timer = 0;
-        money[0] += 1;
-        money[1] += 1;
-    }
+	sendJSON({'command': 'update'});
 
     // Move camera down.
     if (key_down
@@ -70,6 +65,12 @@ function logic() {
       width,
       height
     );
+    money_timer += 1;
+    if (money_timer > 99) {
+        money_timer = 0;
+        money[0] += 1;
+        money[1] += 1;
+    }
 
     if (p1_buildings.length > 1) {
         if (money[1] >= 100) {
@@ -571,26 +572,22 @@ function keep_distance(u1, u2) {
 }
 
 function set_destitation(type,
-						 index_of_units_to_set_dest, dest_x, dest_y) {
+						 index,
+						 dest_x, dest_y) {
 	// index of destination: 3,4 for units; 6,7 for buildings
-	console.log(type);
 	var x_index, y_index, it;
 	if (type === 0) {
-		for (it = 0; it < index_of_units_to_set_dest.length; it+=1) {
-			if (debug_flag)
-				console.log("setting destination for unit(s):",
-							index_of_units_to_set_dest[it]);
-			p0_units[index_of_units_to_set_dest[it]][3] = dest_x;
-			p0_units[index_of_units_to_set_dest[it]][4] = dest_y;
-		}
+		if (debug_flag)
+			console.log("setting destination for unit:",
+						index);
+		p0_units[index][3] = dest_x;
+		p0_units[index][4] = dest_y;
 	} else if (type > 1) {
-		for (it = 0; it < index_of_units_to_set_dest.length; it+=1) {
-			if (debug_flag)
-				console.log("setting destination for buildings(s):",
-							index_of_units_to_set_dest[it]);
-			p0_buildings[index_of_units_to_set_dest[it]][6] = dest_x;
-			p0_buildings[index_of_units_to_set_dest[it]][7] = dest_y;
-		}
+		if (debug_flag)
+			console.log("setting destination for building:",
+						index);
+		p0_buildings[index][6] = dest_x;
+		p0_buildings[index][7] = dest_y;
 	}
 }
 
@@ -718,6 +715,7 @@ var canvas = 0;
 var camera_x = 0;
 var camera_y = 0;
 var height = 0;
+var width = 0;
 var interval = 0;
 var key_down = false;
 var key_left = false;
@@ -725,33 +723,16 @@ var key_right = false;
 var key_up = false;
 var level_size_math = 0;
 var mode = 0;
-var money_timer = 0;
 var mouse_hold = 0;
 var mouse_lock_x = 0;
 var mouse_lock_y = 0;
 var mouse_x = 0;
 var mouse_y = 0;
-var money = [];
-var fog = [];
-var bullets = [];
-var p0_buildings = [];
-// [5] for selection
-// [6][7] for destination
-var p0_units = [];
-/* p0_units structure
- 0/1: current location (x,y)
- 2  : fill color (selected or not)('#1f1' : '#0b0')
- 3/4: destination (x,y)
- 5  : bullet reload timer
- 6  : HP
- 7  : is moving or not (true for moving)
-*/
-var p1_buildings = [];
-var p1_units = [];
-var world_static = [];
-var pi_times_two = Math.PI * 2;
 var selected_id = -1;
 var selected_type = -1;
+var pi_times_two = Math.PI * 2;
+var x = 0;
+var y = 0;
 var settings = {
   'audio-volume':
 	window.localStorage.getItem('RTS-2D.htm-audio-volume') === null ?
@@ -775,36 +756,27 @@ var settings = {
 		10 :
 		parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
 };
-var width = 0;
-var x = 0;
-var y = 0;
+
+var money_timer = 0;
+var money = [];
+var fog = [];
+var bullets = [];
+var p0_buildings = [];
+// [5] for selection
+// [6][7] for destination
+var p0_units = [];
+/* p0_units structure
+ 0/1: current location (x,y)
+ 2  : fill color (selected or not)('#1f1' : '#0b0')
+ 3/4: destination (x,y)
+ 5  : bullet reload timer
+ 6  : HP
+ 7  : is moving or not (true for moving)
+*/
+var p1_buildings = [];
+var p1_units = [];
+var world_static = [];
 var moving_speed = 0.75;
 var bullet_speed = 12;
 
 setmode(0);
-
-//websocket
-try {
-    var sock = new WebSocket("ws://localhost:1234");
-    //sock.binaryType = 'blob'; // can set it to 'blob' or 'arraybuffer 
-    console.log("Websocket - status: " + sock.readyState);
-    sock.onopen = function(m) { 
-        console.log("CONNECTION opened..." + this.readyState);
-	};
-    sock.onmessage = function(m) { 
-        console.log(m.data);
-		console.log(JSON.parse(m.data));
-	};
-    sock.onerror = function(m) {
-        console.log("Error occured sending..." + m.data);
-	};
-    sock.onclose = function(m) { 
-        console.log("Disconnected - status " + this.readyState);
-	};
-} catch(exception) {
-    console.log(exception);
-}
-
-sock.sendmsg = function(msg) {
-	sock.send(JSON.stringify(msg));
-};
