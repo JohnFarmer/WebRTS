@@ -1,5 +1,5 @@
-function core(settings) {
-	console.log('initializing game core with settings:', settings);
+function game_core(settings) {
+	console.log('initializing game_core with settings:', settings);
 	var money_timer = 0;
 	var money = [];
 	var fog = [];
@@ -21,10 +21,13 @@ function core(settings) {
 	var world_static = [];
 	var moving_speed = 0.75;
 	var bullet_speed = 12;
+	var mode = settings['mode'];
+	var selected_type = -1;
 	
-	function update() {
-		return {"command": "update"};
-	}
+	this.update = function() {
+		logic();
+		return {"command": "refresh"};
+	};
 
 	function logic() {
 		// logic to do:
@@ -436,8 +439,7 @@ function core(settings) {
 		}
 	}
 
-	function build_robot() {
-
+	this.build_robot = function() {
 		if (money[0] < 100) {
 			return;
 		}
@@ -458,9 +460,9 @@ function core(settings) {
 			100,// Health
 			0,// Moving?
 		]);
-	}
+	};
 
-	function build_building(type, building_x, building_y) {
+	this.build_building = function(type, building_x, building_y) {
 		if (type === 2) {
 			if (money[0] < 250) {
 				return;
@@ -489,7 +491,7 @@ function core(settings) {
 		} else {
 			console.log("Unknown Building Type", type);
 		}
-	}
+	};
 
 	function fog_update_building() {
 		var loop_counter = p0_buildings.length - 1;
@@ -558,32 +560,68 @@ function core(settings) {
 		u1[4] = Math.round(u1[4] - 0.7 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 	}
 
-	function set_destitation(type,
-							 index_of_units_to_set_dest, dest_x, dest_y) {
+	this.set_destitation = function(dest_x, dest_y) {
 		// index of destination: 3,4 for units; 6,7 for buildings
-		console.log(type);
-		var x_index, y_index, it;
-		if (type === 0) {
-			for (it = 0; it < index_of_units_to_set_dest.length; it+=1) {
+		var index;
+		if (this.selected_type === 0) {
+			for (index = 0; index < p0_units.length; index += 1) {
 				if (debug_flag)
-					console.log("setting destination for unit(s):",
-								index_of_units_to_set_dest[it]);
-				p0_units[index_of_units_to_set_dest[it]][3] = dest_x;
-				p0_units[index_of_units_to_set_dest[it]][4] = dest_y;
+					console.log("setting destination for unit:",
+								index);
+				if (p0_units[index][2]) {
+					p0_units[index][3] = dest_x;
+					p0_units[index][4] = dest_y;
+				}
 			}
-		} else if (type > 1) {
-			for (it = 0; it < index_of_units_to_set_dest.length; it+=1) {
+		} else if (this.selected_type > 1) {
+			for (index = 0; index < p0_buildings.length; index += 1) {
 				if (debug_flag)
-					console.log("setting destination for buildings(s):",
-								index_of_units_to_set_dest[it]);
-				p0_buildings[index_of_units_to_set_dest[it]][6] = dest_x;
-				p0_buildings[index_of_units_to_set_dest[it]][7] = dest_y;
+					console.log("setting destination for building:",
+								index);
+				if (p0_buildings[index][5]) {
+					p0_buildings[index][6] = dest_x;
+					p0_buildings[index][7] = dest_y;
+				}
 			}
 		}
-	}
+	};
+
+	this.select = function(type, selected_things) {
+		this.selected_type = type;
+		console.log("selecting...", selected_things);
+		if (this.selected_type >= 0) {
+			for (index = 0; index < p0_units.length; index += 1) {
+				if (selected_things['units'][index])
+					p0_units[index][2] = 1;
+				else
+					p0_units[index][2] = 0;
+			}
+			for (index = 0; index < p0_buildings.length; index += 1) {
+				if (selected_things['buildings'][index])
+					p0_buildings[index][5] = 1;
+				else
+					p0_buildings[index][5] = 0;
+			}
+		} else if (this.selected_type === -1) {
+			for (index = 0; index < p0_units.length; index += 1) {
+				p0_units[index][2] = 0;
+			}
+			for (index = 0; index < p0_buildings.length; index += 1) {
+				p0_buildings[index][5] = 0;
+			}
+		} else {
+			console.log("unknown selected_type:", this.selected_type);
+		}
+	};
+	
+	this.print_game_state = function() {
+		console.log('game state:');
+		console.log(p0_units);
+		console.log(p0_buildings);
+	};
 
 
-	var world_init = function() {
+	function world_init() {
 		money = [
 			3000,
 			5000,
@@ -688,12 +726,10 @@ function core(settings) {
 			// Remove fog around initial buildings.
 			fog_update_building();
 		}
-	};
-
-	function handle_seclet(select_id, select_type) {
-		
 	}
+
 	
+	world_init();
 };
 
-module.exports = core;
+module.exports = game_core;

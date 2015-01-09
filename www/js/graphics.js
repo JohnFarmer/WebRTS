@@ -817,14 +817,21 @@ function save() {
     }
 }
 
-function select() {
+function get_select() {
+	var selected = false;
+	var selected_unit = false;
     selected_id = -1;
     selected_type = -1;
 
-    loop_counter = p0_units.length - 1;
+	var selected_things = {
+		'units' : [],
+		'buildings' : []
+	};
+
+    var loop_counter = p0_units.length - 1;
     if (loop_counter >= 0) {
         do {
-            p0_units[loop_counter][2] = ((
+			selected = ((
                 (mouse_lock_x <
 				 x + p0_units[loop_counter][0] + camera_x + 15
                  && mouse_x >
@@ -843,11 +850,18 @@ function select() {
 						&& mouse_y <
 						y + p0_units[loop_counter][1] + camera_y + 15))) ?
 				1 : 0;
+			console.log(selected);
 
-            if (p0_units[loop_counter][2]) {
+			//p0_units[loop_counter][2] = selected;
+
+            if (selected) {
                 selected_id = loop_counter;
                 selected_type = 0;
-            }
+				selected_things['units'][loop_counter] = 1;
+				selected = 0;
+            } else {
+				selected_things['units'][loop_counter] = 0;
+			}
         } while(loop_counter--);
     }
 
@@ -855,7 +869,7 @@ function select() {
     if (loop_counter >= 0) {
         do {
             if (selected_type == -1) {
-                p0_buildings[loop_counter][5] = (
+				selected = (
                     (mouse_lock_x <
 					 x + p0_buildings[loop_counter][0] +
 					 camera_x + p0_buildings[loop_counter][2]
@@ -878,19 +892,26 @@ function select() {
 							y + p0_buildings[loop_counter][1] +
 							camera_y + p0_buildings[loop_counter][3]));
 
-                if (p0_buildings[loop_counter][5]) {
+				//p0_buildings[loop_counter][5] = selected;
+
+                if (selected) {
                     selected_id = loop_counter;
                     selected_type = p0_buildings[loop_counter][8];
-                }
-
+					selected_things['buildings'][loop_counter] = 1;
+					selected = 0;
+                } else {
+					selected_things['buildings'][loop_counter] = 0;
+				}
             } else {
-                p0_buildings[loop_counter][5] = 0;
+				selected_things['buildings'][loop_counter] = 0;
             }
         } while(loop_counter--);
     }
+	
+	select(selected_type, selected_things);
 }
 
-function get_mouse_position_and_set_destination(on_minimap) {
+function get_destination_and_set(on_minimap) {
 	var loop_counter;
 	var dest_x, dest_y;
 
@@ -915,38 +936,7 @@ function get_mouse_position_and_set_destination(on_minimap) {
 		dest_y = -settings['level-size'];
     }
 
-	// find out which units/buidling to set destination
-    if (selected_type == 0) {
-        loop_counter = p0_units.length - 1;
-        if (loop_counter >= 0) {
-            do {
-				// if selected
-                if (p0_units[loop_counter][2]) {
-					if (debug_flag)
-						console.log("index of unit to set destination: ",
-									loop_counter);
-					set_destitation(selected_type,
-									loop_counter,
-									dest_x, dest_y);
-                }
-            } while(loop_counter--);
-        }
-
-    } else if (selected_type > 1) {
-        loop_counter = p0_buildings.length - 1;
-        if (loop_counter >= 0) {
-            do {
-                if (p0_buildings[loop_counter][5]) {
-					if (debug_flag)
-						console.log("index of building to set destination: ",
-									loop_counter);
-					set_destitation(selected_type,
-									loop_counter,
-									dest_x, dest_y);
-                }
-            } while(loop_counter--);
-        }
-    }
+	set_destination(dest_x, dest_y);
 }
 
 function validate_camera_move(mouse_x, mouse_y) {
@@ -974,11 +964,6 @@ function setmode(newmode) {
 
     // New game mode.(is actually three color scheme now)
     if (mode > 0) {
-		sendJSON({
-			'command' : 'new_game',
-			'mode' : mode,
-			'settings' : settings
-				 });
         save();
 
         key_down = false;
@@ -1144,7 +1129,7 @@ window.onmousedown = function(e) {
 
             // Right click: try to set selected building/unit destination.
             } else if (e.button == 2) {
-                get_mouse_position_and_set_destination(false);
+                get_destination_and_set(false);
             }
 
         // Else if HQ is selected, activate build mode.
@@ -1159,7 +1144,7 @@ window.onmousedown = function(e) {
 
     // Right clicking on minimap.
     } else if (e.button == 2) {
-        get_mouse_position_and_set_destination(true);
+        get_destination_and_set(true);
 
     // Other clicks: move camera.
     } else {
@@ -1193,7 +1178,7 @@ window.onmousemove = function(e) {
 
     // Dragging after click was not on minimap.
     if (mouse_hold == 1) {
-        select();
+        get_select();
 
     // Dragging after click was on minimap.
     } else if (mouse_hold == 2) {

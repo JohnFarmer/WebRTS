@@ -1,6 +1,10 @@
 module.exports = function(http_server) {
+	var debug_flag = true;
+	var heavy_debug_flag = false;
+
 	var websocketserver = require('websocket').server;
 	var game_core = require('./game-core.js');
+	var game;
 	var wss = new websocketserver({
 		httpServer: http_server
 	});
@@ -20,8 +24,9 @@ module.exports = function(http_server) {
 			var msgJSON = {};
 			try {
 				msgJSON = JSON.parse(msg);
-				if (msgJSON['command'] !== "update")  
-					console.log('parsing JSON:', msg);
+				if (debug_flag)
+					if (heavy_debug_flag || msgJSON['command'] !== "update")  
+						console.log('parsing JSON:', msg);
 			} catch(e) {
 				console.log(e);
 			}
@@ -34,29 +39,40 @@ module.exports = function(http_server) {
 		
 		conn.on('message', function(message) {
 			var msgJSON = recieveJSON(message.utf8Data);
-			if (msgJSON['command'] === "new_game") {
-				command_log(msgJSON['command']);
-				console.log(msgJSON);
-				var game = new game_core(msgJSON['settings']);
-				//game.world_init();
-
+			if (false) {
+				
 			} else if (msgJSON['command'] === "update") {
-				//sendJSON(game.update());
-				if (update_count % 80 === 0)
+				if (game)
+					sendJSON(game.update());
+				else
+					return;
+
+				if (update_count % 80 === 0) {
 					console.log('updating... ', update_count);
+					game.print_game_state();
+				}
 				update_count += 1;
 			} else if (msgJSON['command'] === "select") {
-				//game.handle_select(msgJSON['select_id'],
-			//	msgJSON['select_type']);
+				game.select(msgJSON['type'],
+							msgJSON['selected_things']);
 				
-			} else if (msgJSON['command'] === "kbd") {
-				//msgJSON['input_data']
+			} else if (msgJSON['command'] === "set_destination") {
+				game.set_destination(msgJSON['dest_x'],
+									 msgJSON['dest_y']);
 				
 			} else if (msgJSON['command'] === "build_robot") {
+				//game.build_robot();
 
 			} else if (msgJSON['command'] === "build_building") {
 				//msgJSON['build_args']
 				//game.build_building(msgJSON['build_args']);
+				game.build_building(msgJSON['type'],
+									msgJSON['building_x'],
+									msgJSON['building_y']);
+			} else if (msgJSON['command'] === "new_game") {
+				command_log(msgJSON['command']);
+				console.log(msgJSON);
+				game= new game_core(msgJSON['settings']);
 			} else {
 				console.log('unkown command:', msgJSON['command']);
 			}

@@ -1,0 +1,93 @@
+* client -> server
+key_down/up/right/left
+* server -> client
+** fog []
+array((int, int)...):
+1. x
+2. y
+
+** bullets []
+array((float**5)...):
+1. x
+2. y
+3. destination x
+4. destination y
+5. whose bullet? (0: player's, 1: cpu's)
+** money []
+array(int, int):
+1. p0_money
+2. p1_money
+** p0_units [] 
+array((float**8)...):
+1. x
+2. y
+3. selected? (0: not selected)
+4. destination x
+5. destination y
+6. weapon reload
+7. HP
+8. moving? (0: not moving)
+** p1_units [] 
+array((float**6)...):
+1. x
+2. y
+4. destination x
+5. destination y
+6. weapon reload
+7. HP
+** p0_buildings []
+array((int**9)...):
+1. x
+2. y
+3. width 
+4. height
+5. HP
+6. selected? (0: not selected)
+7. destination x
+8. destination y
+9. type (1: HQ, 2: Factory)
+** p1_buildings []
+array((int**6)...):
+1. x
+2. y
+3. width 
+4. height
+5. HP
+6. type (1: HQ, 2: Factory)
+** world_static []
+array((int**5)...):
+1. -level-size
+2. -level-size
+3. level-size * 2
+4. level-size * 2
+5. mode(mode-1)
+* Function at server side
+** public
+<function> | <interface>
+*** DONE build_robot | sockmsg: build_robot
+	params: (<none>)
+*** DONE build_building | sockmsg: build_building
+	params: (type, building_x, building_y)
+*** DONE set_destination | sockmsg: set_destination
+	params: (x_dest, y_dest)
+	NOTE:
+	what to set_dest can be known from select_id/type
+	which handled by select function
+*** DONE new_game | sockmsg: new_game
+	params: (settings)
+*** DONE select | sockmsg:select
+	params: (type, selected_things{units(array), buildings(array)})
+*** money | sockmsg: money
+	params: (type, amount)
+*** input | sockmsg: input
+	params: [kbd, mouse]
+*** select | sockmsg : select
+	params: (type, id)
+** private
+*** logic
+*** fog_update_building
+*** m
+*** distance
+*** in_position
+*** keep_distance
+  

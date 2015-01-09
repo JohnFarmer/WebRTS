@@ -56,7 +56,7 @@ function logic() {
 
     // Handle selection box.
     if (mouse_hold == 1) {
-        select();
+        get_select();
     }
 
     buffer.clearRect(
@@ -252,16 +252,16 @@ function logic() {
 
 				//mark unit is not moving
 				p0_units[loop_counter][7] = 0;
-				for (var it = 0; it< p0_units.length; it += 1) {
-					if (it == loop_counter) {
+				for (var index = 0; index< p0_units.length; index += 1) {
+					if (index == loop_counter) {
 
 					} else {
 						// only check units which are not moving
-						if (!p0_units[it][7]
+						if (!p0_units[index][7]
 							&& distance(p0_units[loop_counter],
-										p0_units[it]) <= 20) {
+										p0_units[index]) <= 20) {
 							keep_distance(p0_units[loop_counter],
-										  p0_units[it]);
+										  p0_units[index]);
 							break;
 						}
 					}
@@ -450,6 +450,9 @@ function logic() {
 }
 
 function build_robot() {
+	sendJSON({
+		'command' : 'build_robot'
+	});
 
     if (money[0] < 100) {
         return;
@@ -474,6 +477,13 @@ function build_robot() {
 }
 
 function build_building(type, building_x, building_y) {
+	sendJSON({
+		'command' : 'build_building',
+		'type' : type,
+		'building_x' : building_x,
+		'building_y' : building_y
+	});
+
 	if (type === 2) {
 		if (money[0] < 250) {
 			return;
@@ -500,7 +510,8 @@ function build_building(type, building_x, building_y) {
 	} else if (type === 3) {
 		
 	} else {
-		console.log("Unknown Building Type", type);
+		if (debug_flag)
+			console.log("Unknown Building Type", type);
 	}
 }
 
@@ -571,28 +582,79 @@ function keep_distance(u1, u2) {
 	u1[4] = Math.round(u1[4] - 0.7 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 }
 
-function set_destitation(type,
-						 index,
-						 dest_x, dest_y) {
+//function set_destitation(type,
+						 //index,
+						 //dest_x, dest_y) {
+function set_destination(dest_x, dest_y) {
 	// index of destination: 3,4 for units; 6,7 for buildings
-	var x_index, y_index, it;
-	if (type === 0) {
-		if (debug_flag)
-			console.log("setting destination for unit:",
-						index);
-		p0_units[index][3] = dest_x;
-		p0_units[index][4] = dest_y;
-	} else if (type > 1) {
-		if (debug_flag)
-			console.log("setting destination for building:",
-						index);
-		p0_buildings[index][6] = dest_x;
-		p0_buildings[index][7] = dest_y;
+	sendJSON({
+		'command' : 'set_destination',
+		'dest_x' : dest_x,
+		'dest_y' : dest_y
+	});
+
+	var index;
+	if (selected_type === 0) {
+		for (index = 0; index < p0_units.length; index += 1) {
+			if (debug_flag)
+				console.log("setting destination for unit:",
+							index);
+			if (p0_units[index][2]) {
+				p0_units[index][3] = dest_x;
+				p0_units[index][4] = dest_y;
+			}
+		}
+	} else if (selected_type > 1) {
+		for (index = 0; index < p0_buildings.length; index += 1) {
+			if (debug_flag)
+				console.log("setting destination for building:",
+							index);
+			if (p0_buildings[index][5]) {
+				p0_buildings[index][6] = dest_x;
+				p0_buildings[index][7] = dest_y;
+			}
+		}
+	}
+}
+
+function select(type, selected_things) {
+	var index;
+	console.log("selecting...", selected_things);
+	if (type >= 0) {
+		for (index = 0; index < p0_units.length; index += 1) {
+			if (selected_things['units'][index])
+				p0_units[index][2] = 1;
+			else
+				p0_units[index][2] = 0;
+		}
+		for (index = 0; index < p0_buildings.length; index += 1) {
+			if (selected_things['buildings'][index])
+				p0_buildings[index][5] = 1;
+			else
+				p0_buildings[index][5] = 0;
+		}
+	} else if (type === -1) {
+		for (index = 0; index < p0_units.length; index += 1) {
+			p0_units[index][2] = 0;
+		}
+		for (index = 0; index < p0_buildings.length; index += 1) {
+			p0_buildings[index][5] = 0;
+		}
+	} else {
+		console.log("unknown type:", type);
 	}
 }
 
 
 function world_init() {
+	sendJSON({
+		'command' : 'new_game',
+		'settings' : {
+			'level-size' : settings['level-size'],
+			'fog-of-war' : settings['fog-of-war'],
+			'mode' : mode
+		}
+	});
     money = [
         3000,
         5000,

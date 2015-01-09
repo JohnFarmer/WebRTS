@@ -1,28 +1,20 @@
 //websocket
-var update_count = 0;
+var refresh_count = 0;
 try {
-    var sock = new WebSocket("ws://localhost:1234");
+    var sock = new WebSocket("ws://test1.com");
     //sock.binaryType = 'blob'; // can set it to 'blob' or 'arraybuffer 
-    console.log("Websocket - status: " + sock.readyState);
+	console.log("Websocket - status: " + sock.readyState);
     sock.onopen = function(m) { 
-        console.log("CONNECTION opened..." + this.readyState);
+		console.log("CONNECTION opened..." + this.readyState);
 	};
     sock.onmessage = function(m) { 
 		var msgJSON = recieveJSON(m.data);
 
-		if (msgJSON['command'] === "new_game") {
-
-		} else if (msgJSON['command'] === "update") {
-			if (update_count % 80 === 0)
-				console.log('updating... ', update_count);
-			update_count += 1;
-		} else if (msgJSON['command'] === "select") {
-
-		} else if (msgJSON['command'] === "kbd") {
-			
-		} else if (msgJSON['command'] === "build_robot") {
-
-		} else if (msgJSON['command'] === "build_building") {
+		if (msgJSON['command'] === "refresh") {
+			if (heavy_debug_flag || refresh_count % 80 === 0)
+				console.log('refreshing... ', refresh_count);
+			refresh_count += 1;
+		} else if (msgJSON['command'] === "CMD") {
 
 		} else {
 			console.log('unkown command:', msgJSON['command']);
