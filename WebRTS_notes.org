@@ -1,5 +1,3 @@
-* client -> server
-key_down/up/right/left
 * server -> client
 ** fog []
 array((int, int)...):
@@ -61,28 +59,23 @@ array((int**5)...):
 3. level-size * 2
 4. level-size * 2
 5. mode(mode-1)
-* Function at server side
-** public
-<function> | <interface>
-*** DONE build_robot | sockmsg: build_robot
+** win_or_lose
+* server functions
+** public(client->server interfaces)
+<function>
+*** DONE build_robot
 	params: (<none>)
-*** DONE build_building | sockmsg: build_building
+*** DONE build_building
 	params: (type, building_x, building_y)
-*** DONE set_destination | sockmsg: set_destination
+*** DONE set_destination
 	params: (x_dest, y_dest)
 	NOTE:
 	what to set_dest can be known from select_id/type
 	which handled by select function
-*** DONE new_game | sockmsg: new_game
+*** DONE new_game
 	params: (settings)
-*** DONE select | sockmsg:select
+*** DONE select
 	params: (type, selected_things{units(array), buildings(array)})
-*** money | sockmsg: money
-	params: (type, amount)
-*** input | sockmsg: input
-	params: [kbd, mouse]
-*** select | sockmsg : select
-	params: (type, id)
 ** private
 *** logic
 *** fog_update_building
@@ -91,3 +84,6 @@ array((int**5)...):
 *** in_position
 *** keep_distance
   
+* TODOs
+** TODO clean branches
+Fri Jan  9 23:50:28 HKT 2015

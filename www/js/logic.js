@@ -10,6 +10,7 @@ function refresh_state(state) {
 		bullets = state['bullets'];
 		money = state['money'];
 		world_static = state['world_static'];
+		win_or_lose = state['win_or_lose'];
 	}
 }
 
@@ -572,6 +573,7 @@ function set_destination(dest_x, dest_y) {
 		'dest_x' : dest_x,
 		'dest_y' : dest_y
 	});
+	return;
 
 	var index;
 	if (selected_type === 0) {
@@ -603,6 +605,7 @@ function select(type, selected_things) {
 		'type' : type,
 		'selected_things' : selected_things
 	});
+	return;
 
 	var index;
 	console.log("selecting...", selected_things);
@@ -631,8 +634,7 @@ function select(type, selected_things) {
 	}
 }
 
-
-function world_init() {
+function ready_to_init() {
 	sendJSON({
 		'command' : 'new_game',
 		'settings' : {
@@ -641,7 +643,13 @@ function world_init() {
 			'mode' : mode
 		}
 	});
-    money = [
+}
+
+function world_init(init_settings) {
+
+	win_or_lose_flag = false;
+
+	money = [
         3000,
         5000,
     ];
@@ -657,8 +665,9 @@ function world_init() {
     ];
 
     // Choose random starting locations.
-    var start_x = Math.floor(Math.random() * 2);
-    var start_y = Math.floor(Math.random() * 2);
+	camera_x = init_settings['camera_x'];
+	camera_y = init_settings['camera_y'];
+	return;
 
     // Create player 0 HQ.
     p0_buildings = [
@@ -824,6 +833,7 @@ var p0_units = [];
 var p1_buildings = [];
 var p1_units = [];
 var world_static = [];
+var win_or_lose = false;
 var moving_speed = 0.75;
 var bullet_speed = 12;
 

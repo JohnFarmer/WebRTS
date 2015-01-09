@@ -17,7 +17,13 @@ try {
 							msgJSON);
 			refresh_count += 1;
 			refresh_state(msgJSON);
-		} else if (msgJSON['command'] === "CMD") {
+		} else if (msgJSON['command'] === "world_init") {
+			world_init(msgJSON);
+
+		} else if (msgJSON['command'] === "win_or_lose") {
+			win_or_lose_flag = true;
+
+		} else if (msgJSON['command'] === "cmd") {
 
 		} else {
 			console.log('unkown command:', msgJSON['command']);

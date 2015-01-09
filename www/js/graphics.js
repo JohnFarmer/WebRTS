@@ -101,7 +101,7 @@ function draw() {
                 continue;
             }
 
-            buffer.fillStyle = battlefield_color[world_static[loop_counter][4]];
+            buffer.fillStyle = battlefield_color[mode - 1];
             buffer.fillRect(
               world_static[loop_counter][0],
               world_static[loop_counter][1],
@@ -465,7 +465,7 @@ function draw() {
     );
 
     // Draw minimap background.
-    buffer.fillStyle = battlefield_color[world_static[0][4]];
+    buffer.fillStyle = battlefield_color[mode - 1];
     buffer.fillRect(
       0,
       height - 200,
@@ -678,8 +678,7 @@ function draw() {
     buffer.stroke();
 
     // draw win/lose text if win/lose conditions met
-    if ((p0_buildings.length < 1 && p0_units.length < 1)
-      || (p1_buildings.length < 1 && p1_units.length < 1)) {
+    if (win_or_lose) {
         buffer.textAlign = 'center';
 
         if (p0_buildings.length < 1) {
@@ -1022,8 +1021,6 @@ function setmode(newmode) {
         document.getElementById('page').innerHTML = '<canvas id=canvas oncontextmenu="return false"></canvas><canvas id=buffer style=display:none></canvas>';
         document.getElementById('canvas').style.background = background_color[mode - 1];
 
-		world_init();
-
         buffer = document.getElementById('buffer').getContext('2d');
         canvas = document.getElementById('canvas').getContext('2d');
 
@@ -1034,7 +1031,7 @@ function setmode(newmode) {
           'logic()',
           settings['ms-per-frame']
         );
-
+		ready_to_init();
 		// parse moving speed;
 
     // Main menu mode.

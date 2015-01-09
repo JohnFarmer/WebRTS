@@ -23,6 +23,7 @@ function game_core(settings) {
 	var p1_buildings = [];
 	var p1_units = [];
 	var world_static = [];
+	var win_or_lose = false;
 	var moving_speed = 0.75;
 	var bullet_speed = 12;
 	var mode = settings['mode'];
@@ -39,7 +40,8 @@ function game_core(settings) {
 			'p1_buildings': p1_buildings,
 			'money' : money,
 			'world_static' : world_static,
-			'bullets' : bullets
+			'bullets' : bullets,
+			'win_or_lose' : win_or_lose
 		};
 	};
 
@@ -68,6 +70,8 @@ function game_core(settings) {
 		// Move bullet x.
 		// Move bullet y.
 		// If bullet reaches destination, check for collisions.
+
+		// win or lose
 
 		money_timer += 1;
 		if (money_timer > 99) {
@@ -451,6 +455,11 @@ function game_core(settings) {
 				);
 			} while(loop_counter--);
 		}
+		
+		if ((p0_units.length < 1 && p0_buildings.length < 1)
+			|| (p1_units.length < 1 && p1_buildings.length < 1)) {
+			win_or_lose = true;
+		}
 	}
 
 	this.build_robot = function(factory_id) {
@@ -645,10 +654,12 @@ function game_core(settings) {
 	};
 
 
-	function world_init() {
+	this.world_init = function() {
+		win_or_lose = false;
+
 		money = [
-			1000,
-			750,
+			3000,
+			2750,
 		];
 
 		world_static = [
@@ -720,8 +731,8 @@ function game_core(settings) {
 		p1_units = [];
 
 		// Set camera position to HQ location.
-		camera_x = -p0_buildings[0][0] - 50;
-		camera_y = -p0_buildings[0][1] - 50;
+		var camera_x = -p0_buildings[0][0] - 50;
+		var camera_y = -p0_buildings[0][1] - 50;
 
 		// Add fog of war, if settings allow it.
 		fog = [];
@@ -750,10 +761,12 @@ function game_core(settings) {
 			// Remove fog around initial buildings.
 			fog_update_building();
 		}
-	}
-
-	
-	world_init();
+		return {
+			'command' : 'world_init',
+			'camera_x' : camera_x,
+			'camera_y' : camera_y
+		};
+	};
 };
 
 module.exports = game_core;

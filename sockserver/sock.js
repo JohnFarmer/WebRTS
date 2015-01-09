@@ -73,6 +73,7 @@ module.exports = function(http_server) {
 				command_log(msgJSON['command']);
 				console.log(msgJSON);
 				game= new game_core(msgJSON['settings']);
+				sendJSON(game.world_init());
 			} else {
 				console.log('unkown command:', msgJSON['command']);
 			}
