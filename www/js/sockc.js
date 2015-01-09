@@ -1,7 +1,7 @@
 //websocket
 var refresh_count = 0;
 try {
-    var sock = new WebSocket("ws://test1.com");
+    var sock = new WebSocket("ws://" + document.URL.slice(7,-1));
     //sock.binaryType = 'blob'; // can set it to 'blob' or 'arraybuffer 
 	console.log("Websocket - status: " + sock.readyState);
     sock.onopen = function(m) { 
@@ -12,8 +12,11 @@ try {
 
 		if (msgJSON['command'] === "refresh") {
 			if (heavy_debug_flag || refresh_count % 80 === 0)
-				console.log('refreshing... ', refresh_count);
+				console.log('refreshing... ',
+							refresh_count,
+							msgJSON);
 			refresh_count += 1;
+			refresh_state(msgJSON);
 		} else if (msgJSON['command'] === "CMD") {
 
 		} else {

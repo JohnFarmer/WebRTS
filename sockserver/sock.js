@@ -49,7 +49,7 @@ module.exports = function(http_server) {
 
 				if (update_count % 80 === 0) {
 					console.log('updating... ', update_count);
-					game.print_game_state();
+					game.print_state();
 				}
 				update_count += 1;
 			} else if (msgJSON['command'] === "select") {
@@ -61,7 +61,7 @@ module.exports = function(http_server) {
 									 msgJSON['dest_y']);
 				
 			} else if (msgJSON['command'] === "build_robot") {
-				//game.build_robot();
+				game.build_robot(msgJSON['factory_id']);
 
 			} else if (msgJSON['command'] === "build_building") {
 				//msgJSON['build_args']

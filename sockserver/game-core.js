@@ -1,5 +1,9 @@
 function game_core(settings) {
+	var debug_flag = true;
+	var heavy_debug_flag = false;
+
 	console.log('initializing game_core with settings:', settings);
+
 	var money_timer = 0;
 	var money = [];
 	var fog = [];
@@ -26,7 +30,17 @@ function game_core(settings) {
 	
 	this.update = function() {
 		logic();
-		return {"command": "refresh"};
+		return {
+			'command': 'refresh',
+			'fog' : fog,
+			'p0_units': p0_units,
+			'p1_units': p1_units,
+			'p0_buildings': p0_buildings,
+			'p1_buildings': p1_buildings,
+			'money' : money,
+			'world_static' : world_static,
+			'bullets' : bullets
+		};
 	};
 
 	function logic() {
@@ -439,7 +453,7 @@ function game_core(settings) {
 		}
 	}
 
-	this.build_robot = function() {
+	this.build_robot = function(factory_id) {
 		if (money[0] < 100) {
 			return;
 		}
@@ -447,14 +461,14 @@ function game_core(settings) {
 		money[0] -= 100;
 
 		p0_units.push([
-			p0_buildings[selected_id][0] + p0_buildings[selected_id][2] / 2,// X
-			p0_buildings[selected_id][1] + p0_buildings[selected_id][3] / 2,// Y
+			p0_buildings[factory_id][0] + p0_buildings[factory_id][2] / 2,// X
+			p0_buildings[factory_id][1] + p0_buildings[factory_id][3] / 2,// Y
 			0,// Selected?
-			p0_buildings[selected_id][6] != null ?
-				p0_buildings[selected_id][6] :
+			p0_buildings[factory_id][6] != null ?
+				p0_buildings[factory_id][6] :
 				p0_buildings[0][0],// Destination X
-			p0_buildings[selected_id][7] != null ?
-				p0_buildings[selected_id][7] :
+			p0_buildings[factory_id][7] != null ?
+				p0_buildings[factory_id][7] :
 				p0_buildings[0][1],// Destination Y
 			0,// Weapon reload
 			100,// Health
@@ -534,10 +548,10 @@ function game_core(settings) {
 	function in_range(range, x0, y0, x1, y1) {
 		var res = Math.abs(x0 - x1) <= range && Math.abs(y0 - y1) <= range ?
 				true : false;
-		if (heavy_debug_flag) {
-			console.log("!in_range?", x0, y0, x1, y1);
-			console.log("!in_range?", !res);
-		}
+		//if (heavy_debug_flag) {
+			//console.log("!in_range?", x0, y0, x1, y1);
+			//console.log("!in_range?", !res);
+		//}
 		return res;
 	}
 
@@ -560,9 +574,11 @@ function game_core(settings) {
 		u1[4] = Math.round(u1[4] - 0.7 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 	}
 
-	this.set_destitation = function(dest_x, dest_y) {
+	this.set_destination = function(dest_x, dest_y) {
 		// index of destination: 3,4 for units; 6,7 for buildings
 		var index;
+		console.log('setting destination in core with selected_type',
+					this.selected_type);
 		if (this.selected_type === 0) {
 			for (index = 0; index < p0_units.length; index += 1) {
 				if (debug_flag)
@@ -614,17 +630,25 @@ function game_core(settings) {
 		}
 	};
 	
-	this.print_game_state = function() {
+	this.print_state = function() {
 		console.log('game state:');
+		console.log('money');
+		console.log(money);
+		console.log('p0_units');
 		console.log(p0_units);
+		console.log('p0_buildings');
 		console.log(p0_buildings);
+		console.log('p1_units');
+		console.log(p1_units);
+		console.log('p1_buildings');
+		console.log(p1_buildings);
 	};
 
 
 	function world_init() {
 		money = [
-			3000,
-			5000,
+			1000,
+			750,
 		];
 
 		world_static = [

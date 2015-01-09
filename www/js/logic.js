@@ -1,3 +1,18 @@
+var server_side = true;
+var flag = false;
+function refresh_state(state) {
+	if (server_side) {
+		fog = state['fog'];
+		p0_units = state['p0_units'];
+		p1_units = state['p1_units'];
+		p0_buildings = state['p0_buildings'];
+		p1_buildings = state['p1_buildings'];
+		bullets = state['bullets'];
+		money = state['money'];
+		world_static = state['world_static'];
+	}
+}
+
 function logic() {
 	// logic to do:
 	////// basic
@@ -25,46 +40,10 @@ function logic() {
     // Move bullet y.
     // If bullet reaches destination, check for collisions.
 	sendJSON({'command': 'update'});
+	if (server_side) {
+		return;
+	}
 
-    // Move camera down.
-    if (key_down
-		&& camera_y > -settings['level-size']) {
-        camera_y -= settings['scroll-speed'];
-        mouse_lock_y -= settings['scroll-speed'];
-    }
-
-    // Move camera left.
-    if (key_left
-		&& camera_x < settings['level-size']) {
-        camera_x += settings['scroll-speed'];
-        mouse_lock_x += settings['scroll-speed'];
-    }
-
-    // Move camera right.
-    if (key_right
-		&& camera_x > -settings['level-size']) {
-        camera_x -= settings['scroll-speed'];
-        mouse_lock_x -= settings['scroll-speed'];
-    }
-
-    // Move camera up.
-    if (key_up
-		&& camera_y < settings['level-size']) {
-        camera_y += settings['scroll-speed'];
-        mouse_lock_y += settings['scroll-speed'];
-    }
-
-    // Handle selection box.
-    if (mouse_hold == 1) {
-        get_select();
-    }
-
-    buffer.clearRect(
-      0,
-      0,
-      width,
-      height
-    );
     money_timer += 1;
     if (money_timer > 99) {
         money_timer = 0;
@@ -449,9 +428,10 @@ function logic() {
     }
 }
 
-function build_robot() {
+function build_robot(factory_id) {
 	sendJSON({
-		'command' : 'build_robot'
+		'command' : 'build_robot',
+		'factory_id' : factory_id
 	});
 
     if (money[0] < 100) {
@@ -461,14 +441,14 @@ function build_robot() {
     money[0] -= 100;
 
     p0_units.push([
-      p0_buildings[selected_id][0] + p0_buildings[selected_id][2] / 2,// X
-      p0_buildings[selected_id][1] + p0_buildings[selected_id][3] / 2,// Y
+      p0_buildings[factory_id][0] + p0_buildings[factory_id][2] / 2,// X
+      p0_buildings[factory_id][1] + p0_buildings[factory_id][3] / 2,// Y
       0,// Selected?
-      p0_buildings[selected_id][6] != null ?
-			p0_buildings[selected_id][6] :
+      p0_buildings[factory_id][6] != null ?
+			p0_buildings[factory_id][6] :
 			p0_buildings[0][0],// Destination X
-      p0_buildings[selected_id][7] != null ?
-			p0_buildings[selected_id][7] :
+      p0_buildings[factory_id][7] != null ?
+			p0_buildings[factory_id][7] :
 			p0_buildings[0][1],// Destination Y
       0,// Weapon reload
       100,// Health
@@ -618,6 +598,12 @@ function set_destination(dest_x, dest_y) {
 }
 
 function select(type, selected_things) {
+	sendJSON({
+		'command' : 'select',
+		'type' : type,
+		'selected_things' : selected_things
+	});
+
 	var index;
 	console.log("selecting...", selected_things);
 	if (type >= 0) {

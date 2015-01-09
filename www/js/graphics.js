@@ -27,6 +27,45 @@ function draw() {
     // Draw camera boundaries on minimap.
     // draw win/lose text if win/lose conditions met
 
+    // Move camera down.
+    if (key_down
+		&& camera_y > -settings['level-size']) {
+        camera_y -= settings['scroll-speed'];
+        mouse_lock_y -= settings['scroll-speed'];
+    }
+
+    // Move camera left.
+    if (key_left
+		&& camera_x < settings['level-size']) {
+        camera_x += settings['scroll-speed'];
+        mouse_lock_x += settings['scroll-speed'];
+    }
+
+    // Move camera right.
+    if (key_right
+		&& camera_x > -settings['level-size']) {
+        camera_x -= settings['scroll-speed'];
+        mouse_lock_x -= settings['scroll-speed'];
+    }
+
+    // Move camera up.
+    if (key_up
+		&& camera_y < settings['level-size']) {
+        camera_y += settings['scroll-speed'];
+        mouse_lock_y += settings['scroll-speed'];
+    }
+
+    // Handle selection box.
+    if (mouse_hold == 1) {
+        get_select();
+    }
+
+    buffer.clearRect(
+      0,
+      0,
+      width,
+      height
+    );
 
 	draw_frame_count += 1;
 	if (debug_flag && draw_frame_count % 80 === 0) {
@@ -1042,7 +1081,7 @@ window.onkeydown = function(e) {
     // user selected factory and pressed R button
     } else if (selected_type === 2
       && key === 82) {
-        build_robot();
+        build_robot(selected_id);
         return;
     }
 
@@ -1139,7 +1178,7 @@ window.onmousedown = function(e) {
 
         // Else if factory is selected, build robot.
         } else if (selected_type == 2) {
-            build_robot();
+            build_robot(selected_id);
         }
 
     // Right clicking on minimap.
