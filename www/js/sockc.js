@@ -20,9 +20,6 @@ try {
 		} else if (msgJSON['command'] === "world_init") {
 			world_init(msgJSON);
 
-		} else if (msgJSON['command'] === "win_or_lose") {
-			win_or_lose_flag = true;
-
 		} else if (msgJSON['command'] === "cmd") {
 
 		} else {

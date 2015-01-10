@@ -30,25 +30,25 @@ Fire up a modern browser, go to [localhost:1234](http://localhost:1234) and expl
 
 Directory tree of repo:
 ~~~
-WebRTS
-├── app.js              // the main executable
+.
+├── app.js              // main
 │
 ├── sockserver
 │   ├── game-core.js    // handle game logic
-│   └── sock.js		// the websocket browser-server interface
+│   └── sock.js         // server-side websocket interface
 │
-├── www			// browser files
+├── www                 // frontend files
 │   ├── css
 │   │   └── rts-2d.css
 │   ├── index.html
 │   └── js
-│       ├── graphics.js // drawing the game
-│       ├── logic.js    // the graphic-logic interface
-│       └── sockc.js    // the websocket browser-server interface
+│       ├── graphics.js // drawing the game, handle mouse and keyboard
+│       ├── logic.js    // controller
+│       └── sockc.js    // client-side websocket interface
 │
-├── WebRTS\_notes.org   // notes about the browser/server communication protos
+├── notes.org           // notes about communication protos, TODOs, and more
 ├── package.json
-├── LICENSE.md		// CC0 License
+├── LICENSE.md          // CC0 License
 └── README.md
 ~~~
 
