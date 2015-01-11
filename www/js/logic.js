@@ -434,6 +434,8 @@ function build_robot(factory_id) {
         'command' : 'build_robot',
         'factory_id' : factory_id
     });
+    
+    return;
 
     if (money[0] < 100) {
         return;
@@ -464,6 +466,8 @@ function build_building(type, building_x, building_y) {
         'building_x' : building_x,
         'building_y' : building_y
     });
+    
+    return;
 
     if (type === 2) {
         if (money[0] < 250) {

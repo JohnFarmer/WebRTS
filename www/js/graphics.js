@@ -88,274 +88,242 @@ function draw() {
         offset_y
     );
 
-    var loop_counter = world_static.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // Draw world static on screen
-            if (world_static[loop_counter][0] +
-                world_static[loop_counter][2] + offset_x <= 0
-                || world_static[loop_counter][0] + offset_x >= width
-                || world_static[loop_counter][1] +
-                world_static[loop_counter][3] + offset_y <= 0
-                || world_static[loop_counter][1] + offset_y >= height) {
-                continue;
-            }
+    world_static.forEach(function(ws) {
+        // Draw world static on screen
+        if (ws[0] +
+            ws[2] + offset_x <= 0
+            || ws[0] + offset_x >= width
+            || ws[1] +
+            ws[3] + offset_y <= 0
+            || ws[1] + offset_y >= height) {
+            return;
+        }
 
-            buffer.fillStyle = battlefield_color[mode - 1];
-            buffer.fillRect(
-                world_static[loop_counter][0],
-                world_static[loop_counter][1],
-                world_static[loop_counter][2],
-                world_static[loop_counter][3]
-            );
-        } while(loop_counter--);
-    }
+        buffer.fillStyle = battlefield_color[mode - 1];
+        buffer.fillRect(
+            ws[0],
+            ws[1],
+            ws[2],
+            ws[3]
+        );
+    });
 
     buffer.font = '42pt sans-serif';
     buffer.textBaseline = 'middle';
     buffer.textAlign = 'center';
 
-    loop_counter = p1_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // Draw p1 building on screen
-            if (p1_buildings[loop_counter][0] +
-                p1_buildings[loop_counter][2] +
-                offset_x <= 0
-                || p1_buildings[loop_counter][0] + offset_x >= width
-                || p1_buildings[loop_counter][1] +
-                p1_buildings[loop_counter][3] + offset_y <= 0
-                || p1_buildings[loop_counter][1] + offset_y >= height) {
-                continue;
-            }
+    p1_buildings.forEach(function(p1_bld) {
+        // Draw p1 buildings on screen
+        if (p1_bld[0] +
+            p1_bld[2] +
+            offset_x <= 0
+            || p1_bld[0] + offset_x >= width
+            || p1_bld[1] +
+            p1_bld[3] + offset_y <= 0
+            || p1_bld[1] + offset_y >= height) {
+            return;
+        }
 
-            buffer.fillStyle = '#600';
-            buffer.fillRect(
-                p1_buildings[loop_counter][0],
-                p1_buildings[loop_counter][1],
-                p1_buildings[loop_counter][2],
-                p1_buildings[loop_counter][3]
-            );
-            buffer.fillStyle = '#0f0';
-            buffer.fillRect(
-                p1_buildings[loop_counter][0],
-                p1_buildings[loop_counter][1] - 10,
-                p1_buildings[loop_counter][2] *
-                    (p1_buildings[loop_counter][4] / 1000),
-                5
-            );
+        buffer.fillStyle = '#600';
+        buffer.fillRect(
+            p1_bld[0],
+            p1_bld[1],
+            p1_bld[2],
+            p1_bld[3]
+        );
+        buffer.fillStyle = '#0f0';
+        buffer.fillRect(
+            p1_bld[0],
+            p1_bld[1] - 10,
+            p1_bld[2] *
+                (p1_bld[4] / 1000),
+            5
+        );
 
-            // Temporarily draw building name.
-            buffer.fillStyle = '#fff';
-            buffer.fillText(
-                [
-                    'HQ',
-                    'F',
-                ][p1_buildings[loop_counter][5] - 1],
-                p1_buildings[loop_counter][0] + 50,
-                p1_buildings[loop_counter][1] + 50
-            );
-        } while(loop_counter--);
-    }
+        // Temporarily draw building name.
+        buffer.fillStyle = '#fff';
+        buffer.fillText(
+            [
+                'HQ',
+                'F',
+            ][p1_bld[5] - 1],
+            p1_bld[0] + 50,
+            p1_bld[1] + 50
+        );
+    });
 
     buffer.strokeStyle = '#ddd';
-    loop_counter = p0_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // Draw p0 building on screen
-            if (p0_buildings[loop_counter][0] +
-                p0_buildings[loop_counter][2] +
-                offset_x <= 0
-                || p0_buildings[loop_counter][0] + offset_x >= width
-                || p0_buildings[loop_counter][1] +
-                p0_buildings[loop_counter][3] +
-                offset_y <= 0
-                || p0_buildings[loop_counter][1] + offset_y >= height) {
-                continue;
-            }
+    p0_buildings.forEach(function(p0_bld) {
+        // Draw p0 buildings on screen
+        if (p0_bld[0] +
+            p0_bld[2] +
+            offset_x <= 0
+            || p0_bld[0] + offset_x >= width
+            || p0_bld[1] +
+            p0_bld[3] +
+            offset_y <= 0
+            || p0_bld[1] + offset_y >= height) {
+            return;
+        }
 
-            buffer.fillStyle = p0_buildings[loop_counter][5] ?
-                '#1f1' : '#060';
-            buffer.fillRect(
-                p0_buildings[loop_counter][0],
-                p0_buildings[loop_counter][1],
-                p0_buildings[loop_counter][2],
-                p0_buildings[loop_counter][3]
-            );
-            buffer.fillStyle = '#0f0';
-            buffer.fillRect(
-                p0_buildings[loop_counter][0],
-                p0_buildings[loop_counter][1] - 10,
-                p0_buildings[loop_counter][2] *
-                    (p0_buildings[loop_counter][4] / 1000),
-                5
-            );
+        buffer.fillStyle = p0_bld[5] ?
+            '#1f1' : '#060';
+        buffer.fillRect(
+            p0_bld[0],
+            p0_bld[1],
+            p0_bld[2],
+            p0_bld[3]
+        );
+        buffer.fillStyle = '#0f0';
+        buffer.fillRect(
+            p0_bld[0],
+            p0_bld[1] - 10,
+            p0_bld[2] *
+                (p0_bld[4] / 1000),
+            5
+        );
 
-            // Temporarily draw building name.
-            buffer.fillStyle = '#fff';
-            buffer.fillText(
-                [
-                    'HQ',
-                    'F',
-                ][p0_buildings[loop_counter][8] - 1],
-                p0_buildings[loop_counter][0] + 50,
-                p0_buildings[loop_counter][1] + 50
-            );
-        } while(loop_counter--);
-    }
+        // Temporarily draw building name.
+        buffer.fillStyle = '#fff';
+        buffer.fillText(
+            [
+                'HQ',
+                'F',
+            ][p0_bld[8] - 1],
+            p0_bld[0] + 50,
+            p0_bld[1] + 50
+        );
+    });
+    
+    p1_units.forEach(function(p1_unt) {
+        // Draw p1 unit on screen
+        if (p1_unt[0] + 15 + x + camera_x <= 0
+            || p1_unt[0] - 15 + x + camera_x >= width
+            || p1_unt[1] + 15 + y + camera_y <= 0
+            || p1_unt[1] - 15 + y + camera_y >= height) {
+            return;
+        }
 
-    loop_counter = p1_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // Draw p1 unit on screen
-            if (p1_units[loop_counter][0] + 15 + x + camera_x <= 0
-                || p1_units[loop_counter][0] - 15 + x + camera_x >= width
-                || p1_units[loop_counter][1] + 15 + y + camera_y <= 0
-                || p1_units[loop_counter][1] - 15 + y + camera_y >= height) {
-                continue;
-            }
+        buffer.fillStyle = '#b00';
+        buffer.fillRect(
+            p1_unt[0] - 15,
+            p1_unt[1] - 15,
+            30,
+            30
+        );
+        buffer.fillStyle = '#0f0';
+        buffer.fillRect(
+            p1_unt[0] - 15,
+            p1_unt[1] - 25,
+            30 * (p1_unt[5] / 100),
+            5
+        );
+        
+    });
 
-            buffer.fillStyle = '#b00';
-            buffer.fillRect(
-                p1_units[loop_counter][0] - 15,
-                p1_units[loop_counter][1] - 15,
-                30,
-                30
-            );
-            buffer.fillStyle = '#0f0';
-            buffer.fillRect(
-                p1_units[loop_counter][0] - 15,
-                p1_units[loop_counter][1] - 25,
-                30 * (p1_units[loop_counter][5] / 100),
-                5
-            );
-        } while(loop_counter--);
-    }
+    p0_units.forEach(function(p0_unt) {
+        // Draw p0 unit on screen
+        if (p0_unt[0] + 15 + x + camera_x <= 0
+            || p0_unt[0] - 15 + x + camera_x >= width
+            || p0_unt[1] + 15 + y + camera_y <= 0
+            || p0_unt[1] - 15 + y + camera_y >= height) {
+            return;
+        }
 
-    loop_counter = p0_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // Draw p0 unit on screen
-            if (p0_units[loop_counter][0] + 15 + x + camera_x <= 0
-                || p0_units[loop_counter][0] - 15 + x + camera_x >= width
-                || p0_units[loop_counter][1] + 15 + y + camera_y <= 0
-                || p0_units[loop_counter][1] - 15 + y + camera_y >= height) {
-                continue;
-            }
+        buffer.fillStyle = p0_unt[2] ? '#1f1' : '#0b0';
+        buffer.fillRect(
+            p0_unt[0] - 15,
+            p0_unt[1] - 15,
+            30,
+            30
+        );
 
-            buffer.fillStyle = p0_units[loop_counter][2] ? '#1f1' : '#0b0';
-            buffer.fillRect(
-                p0_units[loop_counter][0] - 15,
-                p0_units[loop_counter][1] - 15,
-                30,
-                30
-            );
+        buffer.fillStyle = '#0f0';
+        buffer.fillRect(
+            p0_unt[0] - 15,
+            p0_unt[1] - 25,
+            30 * (p0_unt[6] / 100),
+            5
+        );
+        
+    });
 
-            if (heavy_debug_flag) {
-                console.log("p0 unit",
-                            loop_counter,
-                            p0_units[loop_counter][0],
-                            p0_units[loop_counter][1]);
-            }
+    bullets.forEach(function(blt) {
+        // Set bullet color to team color.
+        buffer.fillStyle = blt[4] ?
+            '#f00' :
+            '#0f0';
 
-            buffer.fillStyle = '#0f0';
-            buffer.fillRect(
-                p0_units[loop_counter][0] - 15,
-                p0_units[loop_counter][1] - 25,
-                30 * (p0_units[loop_counter][6] / 100),
-                5
-            );
-        } while(loop_counter--);
-    }
+        buffer.fillRect(
+            blt[0] - 5,
+            blt[1] - 5,
+            10,
+            10
+        );
+    })
 
-    loop_counter = bullets.length - 1;
-    if (loop_counter >= 0) {
-        // Draw bullets.
-        do {
-            // Set bullet color to team color.
-            buffer.fillStyle = bullets[loop_counter][4] ?
-                '#f00' :
-                '#0f0';
-
-            buffer.fillRect(
-                bullets[loop_counter][0] - 5,
-                bullets[loop_counter][1] - 5,
-                10,
-                10
-            );
-        } while(loop_counter--);
-    }
-
-    // Draw fog.
     buffer.fillStyle = '#000';
-    loop_counter = fog.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            buffer.fillRect(
-                    -settings['level-size'] + fog[loop_counter][0],
-                    -settings['level-size'] + fog[loop_counter][1],
-                100,
-                100
-            );
-        } while(loop_counter--);
-    }
+    // Draw fog.
+    fog.forEach(function(fg) {
+        buffer.fillRect(
+                -settings['level-size'] + fg[0],
+                -settings['level-size'] + fg[1],
+            101,
+            101
+        );
+    });
 
     // Draw building destination.
-    loop_counter = p0_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            if (p0_buildings[loop_counter][5] && p0_buildings[loop_counter][6] != null) {
-                buffer.beginPath();
-                buffer.moveTo(
-                    p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] / 2,
-                    p0_buildings[loop_counter][1] + p0_buildings[loop_counter][2] / 2
-                );
-                buffer.lineTo(
-                    p0_buildings[loop_counter][6],
-                    p0_buildings[loop_counter][7]
-                );
-                buffer.closePath();
-                buffer.stroke();
-            }
-        } while(loop_counter--);
-    }
+    p0_buildings.forEach(function(p0_bld) {
+        if (p0_bld[5] && p0_bld[6] != null) {
+            buffer.beginPath();
+            buffer.moveTo(
+                p0_bld[0] + p0_bld[2] / 2,
+                p0_bld[1] + p0_bld[2] / 2
+            );
+            buffer.lineTo(
+                p0_bld[6],
+                p0_bld[7]
+            );
+            buffer.closePath();
+            buffer.stroke();
+        }
+    });
 
     // Draw unit destination and range.
-    loop_counter = p0_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            if (p0_units[loop_counter][2]) {
-                // If not yet reached destination, draw destination line.
-                if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
-                    || p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
-                    buffer.beginPath();
-                    buffer.moveTo(
-                        p0_units[loop_counter][0],
-                        p0_units[loop_counter][1]
-                    );
-                    buffer.lineTo(
-                        p0_units[loop_counter][3],
-                        p0_units[loop_counter][4]
-                    );
-                    buffer.closePath();
-                    buffer.stroke();
-                }
-
-                // Draw range circle.
+    p0_units.forEach(function(p0_unt) {
+        if (p0_unt[2]) {
+            // If not yet reached destination, draw destination line.
+            if (p0_unt[0] != p0_unt[3]
+                || p0_unt[1] != p0_unt[4]) {
                 buffer.beginPath();
-                buffer.arc(
-                    p0_units[loop_counter][0],
-                    p0_units[loop_counter][1],
-                    240,
-                    0,
-                    pi_times_two,
-                    false
+                buffer.moveTo(
+                    p0_unt[0],
+                    p0_unt[1]
+                );
+                buffer.lineTo(
+                    p0_unt[3],
+                    p0_unt[4]
                 );
                 buffer.closePath();
                 buffer.stroke();
             }
-        } while(loop_counter--);
-    }
+
+            // Draw range circle.
+            buffer.beginPath();
+            buffer.arc(
+                p0_unt[0],
+                p0_unt[1],
+                240,
+                0,
+                pi_times_two,
+                false
+            );
+            buffer.closePath();
+            buffer.stroke();
+        }
+        
+    });
 
     buffer.translate(
             -camera_x - x,
@@ -474,135 +442,116 @@ function draw() {
     );
 
     // Draw player 1 buildings on minimap.
-    loop_counter = p1_buildings.length - 1;
-    if (loop_counter >= 0) {
-        buffer.fillStyle = '#600';
-        do {
-            buffer.fillRect(
-                100 + p1_buildings[loop_counter][0] / level_size_math,
-                height - 100 + p1_buildings[loop_counter][1] / level_size_math,
-                50 / (settings['level-size'] / 200),
-                50 / (settings['level-size'] / 200)
-            );
-        } while(loop_counter--);
-    }
+    buffer.fillStyle = '#600';
+    p1_buildings.forEach(function(p1_bld) {
+        buffer.fillRect(
+            100 + p1_bld[0] / level_size_math,
+            height - 100 + p1_bld[1] / level_size_math,
+            50 / (settings['level-size'] / 200),
+            50 / (settings['level-size'] / 200)
+        );
+    });
+
 
     // Draw player 0 buildings on minimap.
-    loop_counter = p0_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            buffer.fillStyle = p0_buildings[loop_counter][5] ? '#1f1' : '#060';
-            buffer.fillRect(
-                100 + p0_buildings[loop_counter][0] / level_size_math,
-                height - 100 + p0_buildings[loop_counter][1] / level_size_math,
-                50 / (settings['level-size'] / 200),
-                50 / (settings['level-size'] / 200)
-            );
-        } while(loop_counter--);
-    }
+    p0_buildings.forEach(function(p0_bld) {
+        buffer.fillStyle = p0_bld[5] ? '#1f1' : '#060';
+        buffer.fillRect(
+            100 + p0_bld[0] / level_size_math,
+            height - 100 + p0_bld[1] / level_size_math,
+            50 / (settings['level-size'] / 200),
+            50 / (settings['level-size'] / 200)
+        );
+    });
 
     // Draw player 1 units on minimap.
-    loop_counter = p1_units.length - 1;
-    if (loop_counter >= 0) {
-        buffer.fillStyle = '#b00';
-        do {
-            buffer.fillRect(
-                100 + (p1_units[loop_counter][0] - 15) / level_size_math,
-                height - 100 + (p1_units[loop_counter][1] - 15) / level_size_math,
-                15 / (settings['level-size'] / 200),
-                15 / (settings['level-size'] / 200)
-            );
-        } while(loop_counter--);
-    }
+    buffer.fillStyle = '#b00';
+    p1_units.forEach(function(p1_unt) {
+        buffer.fillRect(
+            100 + (p1_unt[0] - 15) / level_size_math,
+            height - 100 + (p1_unt[1] - 15) / level_size_math,
+            15 / (settings['level-size'] / 200),
+            15 / (settings['level-size'] / 200)
+        );
+    });
 
     // Draw player 0 units on minimap.
-    loop_counter = p0_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            buffer.fillStyle = p0_units[loop_counter][2] ? '#1f1' : '#0b0';
-            buffer.fillRect(
-                100 + (p0_units[loop_counter][0] - 15) / level_size_math,
-                height - 100 + (p0_units[loop_counter][1] - 15) / level_size_math,
-                15 / (settings['level-size'] / 200),
-                15 / (settings['level-size'] / 200)
-            );
-        } while(loop_counter--);
-    }
+    p0_units.forEach(function(p0_unt) {
+        buffer.fillStyle = p0_unt[2] ? '#1f1' : '#0b0';
+        buffer.fillRect(
+            100 + (p0_unt[0] - 15) / level_size_math,
+            height - 100 + (p0_unt[1] - 15) / level_size_math,
+            15 / (settings['level-size'] / 200),
+            15 / (settings['level-size'] / 200)
+        );
+        
+    });
 
     // Draw fog of war on minimap.
     buffer.fillStyle = '#000';
-    loop_counter = fog.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            buffer.fillRect(
-                fog[loop_counter][0] / level_size_math,
-                height - 200 + fog[loop_counter][1] / level_size_math,
-                50 / (settings['level-size'] / 200),
-                50 / (settings['level-size'] / 200)
-            );
-        } while(loop_counter--);
-    }
+    fog.forEach(function(fg) {
+        buffer.fillRect(
+            fg[0] / level_size_math,
+            height - 200 + fg[1] / level_size_math,
+            50 / (settings['level-size'] / 200),
+            50 / (settings['level-size'] / 200)
+        );
+    });
 
     // Draw building destination on minimap.
-    loop_counter = p0_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // If buliding is selected and has a destination, draw destination line.
-            if (p0_buildings[loop_counter][5]
-                && p0_buildings[loop_counter][6] != null) {
-                buffer.beginPath();
-                buffer.moveTo(
-                    100 + (p0_buildings[loop_counter][0] + p0_buildings[loop_counter][2] / 2) / level_size_math,
-                    height - 100 + (p0_buildings[loop_counter][1] + p0_buildings[loop_counter][3] / 2) / level_size_math
-                );
-                buffer.lineTo(
-                    100 + p0_buildings[loop_counter][6] / level_size_math,
-                    height - 100 + p0_buildings[loop_counter][7] / level_size_math
-                );
-                buffer.closePath();
-                buffer.stroke();
-            }
-        } while(loop_counter--);
-    }
+    p0_buildings.forEach(function(p0_bld) {
+        // If buliding is selected and has a destination, draw destination line.
+        if (p0_bld[5]
+            && p0_bld[6] != null) {
+            buffer.beginPath();
+            buffer.moveTo(
+                100 + (p0_bld[0] + p0_bld[2] / 2) / level_size_math,
+                height - 100 + (p0_bld[1] + p0_bld[3] / 2) / level_size_math
+            );
+            buffer.lineTo(
+                100 + p0_bld[6] / level_size_math,
+                height - 100 + p0_bld[7] / level_size_math
+            );
+            buffer.closePath();
+            buffer.stroke();
+        }
+    });
 
     // Draw unit destination and range on minimap.
-    loop_counter = p0_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            // If unit is selected.
-            if (p0_units[loop_counter][2]) {
-
-                // If unit has a destination it has not yet reached, draw destination line.
-                if (p0_units[loop_counter][0] != p0_units[loop_counter][3]
-                    || p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
-                    buffer.beginPath();
-                    buffer.moveTo(
-                        100 + p0_units[loop_counter][0] / level_size_math,
-                        height - 100 + p0_units[loop_counter][1] / level_size_math
-                    );
-                    buffer.lineTo(
-                        100 + p0_units[loop_counter][3] / level_size_math,
-                        height - 100 + p0_units[loop_counter][4] / level_size_math
-                    );
-                    buffer.closePath();
-                    buffer.stroke();
-                }
-
-                // Draw range circle.
+    p0_units.forEach(function(p0_unt) {
+        // If unit is selected.
+        if (p0_unt[2]) {
+            // If unit has a destination it has not yet reached,
+            // draw destination line.
+            if (p0_unt[0] != p0_unt[3]
+                || p0_unt[1] != p0_unt[4]) {
                 buffer.beginPath();
-                buffer.arc(
-                    100 + p0_units[loop_counter][0] / level_size_math,
-                    height - 100 + p0_units[loop_counter][1] / level_size_math,
-                    120 / (settings['level-size'] / 200),
-                    0,
-                    pi_times_two,
-                    false
+                buffer.moveTo(
+                    100 + p0_unt[0] / level_size_math,
+                    height - 100 + p0_unt[1] / level_size_math
+                );
+                buffer.lineTo(
+                    100 + p0_unt[3] / level_size_math,
+                    height - 100 + p0_unt[4] / level_size_math
                 );
                 buffer.closePath();
                 buffer.stroke();
             }
-        } while(loop_counter--);
-    }
+
+            // Draw range circle.
+            buffer.beginPath();
+            buffer.arc(
+                100 + p0_unt[0] / level_size_math,
+                height - 100 + p0_unt[1] / level_size_math,
+                120 / (settings['level-size'] / 200),
+                0,
+                pi_times_two,
+                false
+            );
+            buffer.closePath();
+            buffer.stroke();
+        }
+    });
 
     var temp_height = 0;
     var temp_width = 0;
@@ -866,91 +815,81 @@ function get_select() {
         'buildings' : []
     };
 
-    var loop_counter = p0_units.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            selected = ((
+    p0_units.forEach(function(p0_unt) {
+        selected = (
+            (mouse_lock_x <
+             x + p0_unt[0] + camera_x + 15
+             && mouse_x >
+             x + p0_unt[0] + camera_x - 15)
+                || (mouse_lock_x >
+                    x + p0_unt[0] + camera_x - 15
+                    && mouse_x <
+                    x + p0_unt[0] + camera_x + 15)
+        )&&(
+            (mouse_lock_y <
+             y + p0_unt[1] + camera_y + 15
+             && mouse_y >
+             y + p0_unt[1] + camera_y - 15)
+                || (mouse_lock_y >
+                    y + p0_unt[1] + camera_y - 15
+                    && mouse_y <
+                    y + p0_unt[1] + camera_y + 15)) ?
+            1 : 0;
+
+        if (selected) {
+            selected_id = p0_units.indexOf(p0_unt);
+            selected_type = 0;
+            selected_things['units'].push(1);
+            selected = 0;
+        } else {
+            selected_things['units'].push(0);
+        }
+        
+    });
+
+    p0_buildings.forEach(function(p0_bld) {
+        if (selected_type == -1) {
+            selected = (
                 (mouse_lock_x <
-                 x + p0_units[loop_counter][0] + camera_x + 15
+                 x + p0_bld[0] +
+                 camera_x + p0_bld[2]
                  && mouse_x >
-                 x + p0_units[loop_counter][0] + camera_x - 15)
+                 x + p0_bld[0] + camera_x)
                     || (mouse_lock_x >
-                        x + p0_units[loop_counter][0] + camera_x - 15
+                        x + p0_bld[0] + camera_x
                         && mouse_x <
-                        x + p0_units[loop_counter][0] + camera_x + 15)
+                        x + p0_bld[0] +
+                        camera_x + p0_bld[2])
             )&&(
                 (mouse_lock_y <
-                 y + p0_units[loop_counter][1] + camera_y + 15
+                 y + p0_bld[1] +
+                 camera_y + p0_bld[3]
                  && mouse_y >
-                 y + p0_units[loop_counter][1] + camera_y - 15)
+                 y + p0_bld[1] + camera_y)
                     || (mouse_lock_y >
-                        y + p0_units[loop_counter][1] + camera_y - 15
+                        y + p0_bld[1] + camera_y
                         && mouse_y <
-                        y + p0_units[loop_counter][1] + camera_y + 15))) ?
+                        y + p0_bld[1] +
+                        camera_y + p0_bld[3])) ?
                 1 : 0;
-            console.log(selected);
-
-            //p0_units[loop_counter][2] = selected;
 
             if (selected) {
-                selected_id = loop_counter;
-                selected_type = 0;
-                selected_things['units'][loop_counter] = 1;
+                selected_id = p0_buildings.indexOf(p0_bld);
+                selected_type = p0_bld[8];
+                selected_things['buildings'].push(1);
                 selected = 0;
             } else {
-                selected_things['units'][loop_counter] = 0;
+                selected_things['buildings'].push(0);
             }
-        } while(loop_counter--);
-    }
-
-    loop_counter = p0_buildings.length - 1;
-    if (loop_counter >= 0) {
-        do {
-            if (selected_type == -1) {
-                selected = (
-                    (mouse_lock_x <
-                     x + p0_buildings[loop_counter][0] +
-                     camera_x + p0_buildings[loop_counter][2]
-                     && mouse_x >
-                     x + p0_buildings[loop_counter][0] + camera_x)
-                        || (mouse_lock_x >
-                            x + p0_buildings[loop_counter][0] + camera_x
-                            && mouse_x <
-                            x + p0_buildings[loop_counter][0] +
-                            camera_x + p0_buildings[loop_counter][2])
-                )&&(
-                    (mouse_lock_y <
-                     y + p0_buildings[loop_counter][1] +
-                     camera_y + p0_buildings[loop_counter][3]
-                     && mouse_y >
-                     y + p0_buildings[loop_counter][1] + camera_y)
-                        || (mouse_lock_y >
-                            y + p0_buildings[loop_counter][1] + camera_y
-                            && mouse_y <
-                            y + p0_buildings[loop_counter][1] +
-                            camera_y + p0_buildings[loop_counter][3]));
-
-                //p0_buildings[loop_counter][5] = selected;
-
-                if (selected) {
-                    selected_id = loop_counter;
-                    selected_type = p0_buildings[loop_counter][8];
-                    selected_things['buildings'][loop_counter] = 1;
-                    selected = 0;
-                } else {
-                    selected_things['buildings'][loop_counter] = 0;
-                }
-            } else {
-                selected_things['buildings'][loop_counter] = 0;
-            }
-        } while(loop_counter--);
-    }
+        } else {
+            selected_things['buildings'].push(0);
+        }
+    });
     
     select(selected_type, selected_things);
 }
 
 function get_destination_and_set(on_minimap) {
-    var loop_counter;
     var dest_x, dest_y;
 
     // get destination from mouse (x,y)
