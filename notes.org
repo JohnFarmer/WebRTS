@@ -85,5 +85,8 @@ array((int**5)...):
 *** keep_distance
   
 * TODOs
-** TODO clean branches
-Fri Jan  9 23:50:28 HKT 2015
+** TODO Reduce lloat's precision in JSON string to save traffic
+Sat Jan 10 09:50:07 HKT 2015
+One digit should be alright
+** TODO Try to use forEach instead of loop
+Sun Jan 11 22:07:37 HKT 2015

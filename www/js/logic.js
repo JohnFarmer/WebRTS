@@ -1,49 +1,49 @@
 var server_side = true;
 var flag = false;
 function refresh_state(state) {
-	if (server_side) {
-		fog = state['fog'];
-		p0_units = state['p0_units'];
-		p1_units = state['p1_units'];
-		p0_buildings = state['p0_buildings'];
-		p1_buildings = state['p1_buildings'];
-		bullets = state['bullets'];
-		money = state['money'];
-		world_static = state['world_static'];
-		win_or_lose = state['win_or_lose'];
-	}
+    if (server_side) {
+        fog = state['fog'];
+        p0_units = state['p0_units'];
+        p1_units = state['p1_units'];
+        p0_buildings = state['p0_buildings'];
+        p1_buildings = state['p1_buildings'];
+        bullets = state['bullets'];
+        money = state['money'];
+        world_static = state['world_static'];
+        win_or_lose = state['win_or_lose'];
+    }
 }
 
 function logic() {
-	// logic to do:
-	////// basic
-	// money (2.5s for 1$)
-	// camera
+    // logic to do:
+    ////// basic
+    // money (2.5s for 1$)
+    // camera
 
     // Handle selection box.
     // If reloading, decrease reload,...
 
-	////// for CPU's units
+    ////// for CPU's units
     // ...else look for nearby p0 units to fire at.
     // If no units in range, look for buildings to fire at.
     // Movement "ai", pick new destination once destination is reached.
     // If not yet reached destination, move and update fog.
 
-	////// for Player's units
+    ////// for Player's units
     // ...else look for nearby p1 units to fire at.
     // If no units in range, look for buildings to fire at.
-	// make sure p0 units are not too close from each other
+    // make sure p0 units are not too close from each other
 
-	////// for bullet's stuff
+    ////// for bullet's stuff
     // Calculate bullet movement.
     // If reloading, decrease reload,...
     // Move bullet x.
     // Move bullet y.
     // If bullet reaches destination, check for collisions.
-	sendJSON({'command': 'update'});
-	if (server_side) {
-		return;
-	}
+    sendJSON({'command': 'update'});
+    if (server_side) {
+        return;
+    }
 
     money_timer += 1;
     if (money_timer > 99) {
@@ -56,14 +56,14 @@ function logic() {
         if (money[1] >= 100) {
             money[1] -= 100;
             p1_units.push([
-              p1_buildings[1][0] + p1_buildings[1][2] / 2,// X
-              p1_buildings[1][1] + p1_buildings[1][3] / 2,// Y
-              Math.floor(Math.random() * settings['level-size'] * 2)
-					- settings['level-size'],// Destination X
-              Math.floor(Math.random() * settings['level-size'] * 2)
-					- settings['level-size'],// Destination Y
-              0,// Weapon reload
-              100,// Health
+                p1_buildings[1][0] + p1_buildings[1][2] / 2,// X
+                p1_buildings[1][1] + p1_buildings[1][3] / 2,// Y
+                Math.floor(Math.random() * settings['level-size'] * 2)
+                    - settings['level-size'],// Destination X
+                Math.floor(Math.random() * settings['level-size'] * 2)
+                    - settings['level-size'],// Destination Y
+                0,// Weapon reload
+                100,// Health
             ]);
         }
     }
@@ -75,26 +75,26 @@ function logic() {
             if (p1_units[loop_counter][4] > 0) {
                 p1_units[loop_counter][4] -= 1;
 
-            // ...else look for nearby p0 units to fire at.
+                // ...else look for nearby p0 units to fire at.
             } else {
                 var check_for_buildings = true;
                 var p0_units_counter = p0_units.length - 1;
                 if (p0_units_counter >= 0) {
                     do {
                         if (Math.sqrt(Math.pow(p1_units[loop_counter][1] -
-											   p0_units[p0_units_counter][1],
-											   2) +
-									  Math.pow(p1_units[loop_counter][0] -
-											   p0_units[p0_units_counter][0],
-											   2))
-							< 240) {
+                                               p0_units[p0_units_counter][1],
+                                               2) +
+                                      Math.pow(p1_units[loop_counter][0] -
+                                               p0_units[p0_units_counter][0],
+                                               2))
+                            < 240) {
                             p1_units[loop_counter][4] = 75;
                             bullets.push([
-                              p1_units[loop_counter][0],// X
-                              p1_units[loop_counter][1],// Y
-                              p0_units[p0_units_counter][0],// destination X
-                              p0_units[p0_units_counter][1],// destination Y
-                              1,// Player
+                                p1_units[loop_counter][0],// X
+                                p1_units[loop_counter][1],// Y
+                                p0_units[p0_units_counter][0],// destination X
+                                p0_units[p0_units_counter][1],// destination Y
+                                1,// Player
                             ]);
                             check_for_buildings = false;
                             break;
@@ -108,17 +108,17 @@ function logic() {
                     if (p0_buildings_counter >= 0) {
                         do {
                             if (Math.sqrt(Math.pow(p1_units[loop_counter][1] -
-												   (p0_buildings[p0_buildings_counter][1] + 50), 2) +
-										  Math.pow(p1_units[loop_counter][0] -
-												   (p0_buildings[p0_buildings_counter][0] + 50), 2))
-								< 240) {
+                                                   (p0_buildings[p0_buildings_counter][1] + 50), 2) +
+                                          Math.pow(p1_units[loop_counter][0] -
+                                                   (p0_buildings[p0_buildings_counter][0] + 50), 2))
+                                < 240) {
                                 p1_units[loop_counter][4] = 75;
                                 bullets.push([
-                                  p1_units[loop_counter][0],// X
-                                  p1_units[loop_counter][1],// Y
-                                  p0_buildings[p0_buildings_counter][0] + 50,// Destination X
-                                  p0_buildings[p0_buildings_counter][1] + 50,// Destination Y
-                                  1,//To Player
+                                    p1_units[loop_counter][0],// X
+                                    p1_units[loop_counter][1],// Y
+                                    p0_buildings[p0_buildings_counter][0] + 50,// Destination X
+                                    p0_buildings[p0_buildings_counter][1] + 50,// Destination Y
+                                    1,//To Player
                                 ]);
                                 break;
                             }
@@ -128,37 +128,37 @@ function logic() {
             }
 
             // Movement "ai", pick new destination once destination is reached.
-			//if (!in_range(p1_units[loop_counter][0],
-							//p1_units[loop_counter][3],
-							//p1_units[loop_counter][1],
-							//p1_units[loop_counter][4])) {
+            //if (!in_range(p1_units[loop_counter][0],
+            //p1_units[loop_counter][3],
+            //p1_units[loop_counter][1],
+            //p1_units[loop_counter][4])) {
             if (p1_units[loop_counter][0] != p1_units[loop_counter][2]
-              || p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
+                || p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
                 var j = m(
-                  p1_units[loop_counter][0],
-                  p1_units[loop_counter][1],
-                  p1_units[loop_counter][2],
-                  p1_units[loop_counter][3]
+                    p1_units[loop_counter][0],
+                    p1_units[loop_counter][1],
+                    p1_units[loop_counter][2],
+                    p1_units[loop_counter][3]
                 );
 
                 if (p1_units[loop_counter][0] != p1_units[loop_counter][2]) {
                     p1_units[loop_counter][0] += 
-                      (p1_units[loop_counter][0] > p1_units[loop_counter][2] ?
-					   -j[0] : j[0]) *
-						moving_speed;
+                        (p1_units[loop_counter][0] > p1_units[loop_counter][2] ?
+                         -j[0] : j[0]) *
+                        moving_speed;
                 }
 
                 if (p1_units[loop_counter][1] != p1_units[loop_counter][3]) {
                     p1_units[loop_counter][1] +=
-                      (p1_units[loop_counter][1] > p1_units[loop_counter][3] ?
-					   -j[1] : j[1]) *
-						moving_speed;
+                        (p1_units[loop_counter][1] > p1_units[loop_counter][3] ?
+                         -j[1] : j[1]) *
+                        moving_speed;
                 }
 
                 if (p1_units[loop_counter][0] > p1_units[loop_counter][2] - 5
-                  && p1_units[loop_counter][0] < p1_units[loop_counter][2] + 5
-                  && p1_units[loop_counter][1] > p1_units[loop_counter][3] - 5
-                  && p1_units[loop_counter][1] < p1_units[loop_counter][3] + 5) {
+                    && p1_units[loop_counter][0] < p1_units[loop_counter][2] + 5
+                    && p1_units[loop_counter][1] > p1_units[loop_counter][3] - 5
+                    && p1_units[loop_counter][1] < p1_units[loop_counter][3] + 5) {
                     p1_units[loop_counter][2] = Math.floor(Math.random() * settings['level-size'] * 2) - settings['level-size'];
                     p1_units[loop_counter][3] = Math.floor(Math.random() * settings['level-size'] * 2) - settings['level-size'];
                 }
@@ -171,102 +171,102 @@ function logic() {
     if (loop_counter >= 0) {
         do {
             // If not yet reached destination, move and update fog.
-			if (!in_range(1,
-						  p0_units[loop_counter][0],
-						  p0_units[loop_counter][1],
-						  p0_units[loop_counter][3],
-						  p0_units[loop_counter][4])) {
-				// mark that unit is moving
-				p0_units[loop_counter][7] = 1;
+            if (!in_range(1,
+                          p0_units[loop_counter][0],
+                          p0_units[loop_counter][1],
+                          p0_units[loop_counter][3],
+                          p0_units[loop_counter][4])) {
+                // mark that unit is moving
+                p0_units[loop_counter][7] = 1;
 
                 var j = m(
-                  p0_units[loop_counter][0],
-                  p0_units[loop_counter][1],
-                  p0_units[loop_counter][3],
-                  p0_units[loop_counter][4]
+                    p0_units[loop_counter][0],
+                    p0_units[loop_counter][1],
+                    p0_units[loop_counter][3],
+                    p0_units[loop_counter][4]
                 );
 
 
-				//if (heavy_debug_flag)
-					//console.log(
-						//p0_units[loop_counter][0],
-						//p0_units[loop_counter][1],
-						//p0_units[loop_counter][3],
-						//p0_units[loop_counter][4]
-					//);
+                //if (heavy_debug_flag)
+                //console.log(
+                //p0_units[loop_counter][0],
+                //p0_units[loop_counter][1],
+                //p0_units[loop_counter][3],
+                //p0_units[loop_counter][4]
+                //);
 
                 if (p0_units[loop_counter][0] != p0_units[loop_counter][3]) {
                     p0_units[loop_counter][0] +=
-						(p0_units[loop_counter][0] > p0_units[loop_counter][3] ?
-						 -j[0] : j[0]) *
-						moving_speed;
+                        (p0_units[loop_counter][0] > p0_units[loop_counter][3] ?
+                         -j[0] : j[0]) *
+                        moving_speed;
                 }
 
                 if (p0_units[loop_counter][1] != p0_units[loop_counter][4]) {
                     p0_units[loop_counter][1] +=
-						(p0_units[loop_counter][1] > p0_units[loop_counter][4] ?
-						 -j[1] : j[1]) *
-						moving_speed;
+                        (p0_units[loop_counter][1] > p0_units[loop_counter][4] ?
+                         -j[1] : j[1]) *
+                        moving_speed;
                 }
 
                 var fog_counter = fog.length - 1;
                 if (fog_counter >= 0) {
                     do {
                         if (Math.sqrt(Math.pow(p0_units[loop_counter][1] -
-											   fog[fog_counter][1] +
-											   settings['level-size'] - 50, 2) +
-									  Math.pow(p0_units[loop_counter][0] -
-											   fog[fog_counter][0] +
-											   settings['level-size'] - 50, 2))
-							< 290) {
+                                               fog[fog_counter][1] +
+                                               settings['level-size'] - 50, 2) +
+                                      Math.pow(p0_units[loop_counter][0] -
+                                               fog[fog_counter][0] +
+                                               settings['level-size'] - 50, 2))
+                            < 290) {
                             fog.splice(
-                              fog_counter,
-                              1
+                                fog_counter,
+                                1
                             );
                         }
                     } while(fog_counter--);
                 }
             } else {
-				// When reached destination 
-				// units should not too close to each other
+                // When reached destination 
+                // units should not too close to each other
 
-				//mark unit is not moving
-				p0_units[loop_counter][7] = 0;
-				for (var index = 0; index< p0_units.length; index += 1) {
-					if (index == loop_counter) {
+                //mark unit is not moving
+                p0_units[loop_counter][7] = 0;
+                for (var index = 0; index< p0_units.length; index += 1) {
+                    if (index == loop_counter) {
 
-					} else {
-						// only check units which are not moving
-						if (!p0_units[index][7]
-							&& distance(p0_units[loop_counter],
-										p0_units[index]) <= 20) {
-							keep_distance(p0_units[loop_counter],
-										  p0_units[index]);
-							break;
-						}
-					}
-				}
-			}
+                    } else {
+                        // only check units which are not moving
+                        if (!p0_units[index][7]
+                            && distance(p0_units[loop_counter],
+                                        p0_units[index]) <= 20) {
+                            keep_distance(p0_units[loop_counter],
+                                          p0_units[index]);
+                            break;
+                        }
+                    }
+                }
+            }
 
             // If reloading, decrease reload,...
             if (p0_units[loop_counter][5] > 0) {
                 p0_units[loop_counter][5] -= 1;
 
-            // ...else look for nearby p1 units to fire at.
+                // ...else look for nearby p1 units to fire at.
             } else {
                 var check_for_buildings = true;
                 var p1_units_counter = p1_units.length - 1;
                 if (p1_units_counter >= 0) {
                     do {
                         if (Math.sqrt(Math.pow(p0_units[loop_counter][1] - p1_units[p1_units_counter][1], 2)
-                         + Math.pow(p0_units[loop_counter][0] - p1_units[p1_units_counter][0], 2)) < 240) {
+                                      + Math.pow(p0_units[loop_counter][0] - p1_units[p1_units_counter][0], 2)) < 240) {
                             p0_units[loop_counter][5] = 75;
                             bullets.push([
-                              p0_units[loop_counter][0],// X
-                              p0_units[loop_counter][1],// Y
-                              p1_units[p1_units_counter][0],// destination X
-                              p1_units[p1_units_counter][1],// destination Y
-                              0// To CPU
+                                p0_units[loop_counter][0],// X
+                                p0_units[loop_counter][1],// Y
+                                p1_units[p1_units_counter][0],// destination X
+                                p1_units[p1_units_counter][1],// destination Y
+                                0// To CPU
                             ]);
                             check_for_buildings = false;
                             break;
@@ -280,14 +280,14 @@ function logic() {
                     if (p1_buildings_counter >= 0) {
                         do {
                             if (Math.sqrt(Math.pow(p0_units[loop_counter][1] - (p1_buildings[p1_buildings_counter][1] + 50), 2)
-                             + Math.pow(p0_units[loop_counter][0] - (p1_buildings[p1_buildings_counter][0] + 50), 2)) < 240) {
+                                          + Math.pow(p0_units[loop_counter][0] - (p1_buildings[p1_buildings_counter][0] + 50), 2)) < 240) {
                                 p0_units[loop_counter][5] = 75;
                                 bullets.push([
-                                  p0_units[loop_counter][0],// X
-                                  p0_units[loop_counter][1],// Y
-                                  p1_buildings[p1_buildings_counter][0] + 50,// Destination X
-                                  p1_buildings[p1_buildings_counter][1] + 50,// Destination Y
-                                  0// Player
+                                    p0_units[loop_counter][0],// X
+                                    p0_units[loop_counter][1],// Y
+                                    p1_buildings[p1_buildings_counter][0] + 50,// Destination X
+                                    p1_buildings[p1_buildings_counter][1] + 50,// Destination Y
+                                    0// Player
                                 ]);
                                 break;
                             }
@@ -303,35 +303,35 @@ function logic() {
         do {
             // Calculate bullet movement.
             var j = m(
-              bullets[loop_counter][0],
-              bullets[loop_counter][1],
-              bullets[loop_counter][2],
-              bullets[loop_counter][3]
+                bullets[loop_counter][0],
+                bullets[loop_counter][1],
+                bullets[loop_counter][2],
+                bullets[loop_counter][3]
             );
 
             // Move bullet x.
             if (bullets[loop_counter][0] != bullets[loop_counter][2]) {
                 bullets[loop_counter][0] +=
-					bullet_speed *
-					(bullets[loop_counter][0] > bullets[loop_counter][2] ?
-					 -j[0] : j[0]);
+                    bullet_speed *
+                    (bullets[loop_counter][0] > bullets[loop_counter][2] ?
+                     -j[0] : j[0]);
             }
 
             // Move bullet y.
             if (bullets[loop_counter][1] != bullets[loop_counter][3]) {
                 bullets[loop_counter][1] +=
-					bullet_speed *
-					(bullets[loop_counter][1] > bullets[loop_counter][3] ?
-					 -j[1] : j[1]);
+                    bullet_speed *
+                    (bullets[loop_counter][1] > bullets[loop_counter][3] ?
+                     -j[1] : j[1]);
             }
 
             // If bullet reaches destination(in a 10x10 area)
-			// check for collisions.
+            // check for collisions.
             if (!in_range(10, //in 20x20 area of destination
-						  bullets[loop_counter][0],
-						  bullets[loop_counter][1],
-						  bullets[loop_counter][2],
-						  bullets[loop_counter][3])) {
+                          bullets[loop_counter][0],
+                          bullets[loop_counter][1],
+                          bullets[loop_counter][2],
+                          bullets[loop_counter][3])) {
                 continue;
             }
 
@@ -340,17 +340,17 @@ function logic() {
                 if (p0_units_counter >= 0) {
                     do {
                         if (bullets[loop_counter][0] <= p0_units[p0_units_counter][0] - 15
-                          || bullets[loop_counter][0] >= p0_units[p0_units_counter][0] + 15
-                          || bullets[loop_counter][1] <= p0_units[p0_units_counter][1] - 15
-                          || bullets[loop_counter][1] >= p0_units[p0_units_counter][1] + 15) {
+                            || bullets[loop_counter][0] >= p0_units[p0_units_counter][0] + 15
+                            || bullets[loop_counter][1] <= p0_units[p0_units_counter][1] - 15
+                            || bullets[loop_counter][1] >= p0_units[p0_units_counter][1] + 15) {
                             continue;
                         }
 
                         p0_units[p0_units_counter][6] -= 25;
                         if (p0_units[p0_units_counter][6] <= 0) {
                             p0_units.splice(
-                              p0_units_counter,
-                              1
+                                p0_units_counter,
+                                1
                             );
                         }
                         break;
@@ -361,17 +361,17 @@ function logic() {
                 if (p0_buildings_counter >= 0) {
                     do {
                         if (bullets[loop_counter][0] <= p0_buildings[p0_buildings_counter][0]
-                          || bullets[loop_counter][0] >= p0_buildings[p0_buildings_counter][0] + 100
-                          || bullets[loop_counter][1] <= p0_buildings[p0_buildings_counter][1]
-                          || bullets[loop_counter][1] >= p0_buildings[p0_buildings_counter][1] + 100) {
+                            || bullets[loop_counter][0] >= p0_buildings[p0_buildings_counter][0] + 100
+                            || bullets[loop_counter][1] <= p0_buildings[p0_buildings_counter][1]
+                            || bullets[loop_counter][1] >= p0_buildings[p0_buildings_counter][1] + 100) {
                             continue;
                         }
 
                         p0_buildings[p0_buildings_counter][4] -= 25;
                         if (p0_buildings[p0_buildings_counter][4] <= 0) {
                             p0_buildings.splice(
-                              p0_buildings_counter,
-                              1
+                                p0_buildings_counter,
+                                1
                             );
                         }
                         break;
@@ -383,17 +383,17 @@ function logic() {
                 if (p1_units_counter >= 0) {
                     do {
                         if (bullets[loop_counter][0] <= p1_units[p1_units_counter][0] - 15
-                          || bullets[loop_counter][0] >= p1_units[p1_units_counter][0] + 15
-                          || bullets[loop_counter][1] <= p1_units[p1_units_counter][1] - 15
-                          || bullets[loop_counter][1] >= p1_units[p1_units_counter][1] + 15) {
+                            || bullets[loop_counter][0] >= p1_units[p1_units_counter][0] + 15
+                            || bullets[loop_counter][1] <= p1_units[p1_units_counter][1] - 15
+                            || bullets[loop_counter][1] >= p1_units[p1_units_counter][1] + 15) {
                             continue;
                         }
 
                         p1_units[p1_units_counter][5] -= 25;
                         if (p1_units[p1_units_counter][5] <= 0) {
                             p1_units.splice(
-                              p1_units_counter,
-                              1
+                                p1_units_counter,
+                                1
                             );
                         }
                         break;
@@ -404,17 +404,17 @@ function logic() {
                 if (p1_buildings_counter >= 0) {
                     do {
                         if (bullets[loop_counter][0] <= p1_buildings[p1_buildings_counter][0]
-                          || bullets[loop_counter][0] >= p1_buildings[p1_buildings_counter][0] + 100
-                          || bullets[loop_counter][1] <= p1_buildings[p1_buildings_counter][1]
-                          || bullets[loop_counter][1] >= p1_buildings[p1_buildings_counter][1] + 100) {
+                            || bullets[loop_counter][0] >= p1_buildings[p1_buildings_counter][0] + 100
+                            || bullets[loop_counter][1] <= p1_buildings[p1_buildings_counter][1]
+                            || bullets[loop_counter][1] >= p1_buildings[p1_buildings_counter][1] + 100) {
                             continue;
                         }
 
                         p1_buildings[p1_buildings_counter][4] -= 25;
                         if (p1_buildings[p1_buildings_counter][4] <= 0) {
                             p1_buildings.splice(
-                              p1_buildings_counter,
-                              1
+                                p1_buildings_counter,
+                                1
                             );
                         }
                         break;
@@ -422,18 +422,18 @@ function logic() {
                 }
             }
             bullets.splice(
-              loop_counter,
-              1
+                loop_counter,
+                1
             );
         } while(loop_counter--);
     }
 }
 
 function build_robot(factory_id) {
-	sendJSON({
-		'command' : 'build_robot',
-		'factory_id' : factory_id
-	});
+    sendJSON({
+        'command' : 'build_robot',
+        'factory_id' : factory_id
+    });
 
     if (money[0] < 100) {
         return;
@@ -442,58 +442,58 @@ function build_robot(factory_id) {
     money[0] -= 100;
 
     p0_units.push([
-      p0_buildings[factory_id][0] + p0_buildings[factory_id][2] / 2,// X
-      p0_buildings[factory_id][1] + p0_buildings[factory_id][3] / 2,// Y
-      0,// Selected?
-      p0_buildings[factory_id][6] != null ?
-			p0_buildings[factory_id][6] :
-			p0_buildings[0][0],// Destination X
-      p0_buildings[factory_id][7] != null ?
-			p0_buildings[factory_id][7] :
-			p0_buildings[0][1],// Destination Y
-      0,// Weapon reload
-      100,// Health
-	  0,// Moving?
+        p0_buildings[factory_id][0] + p0_buildings[factory_id][2] / 2,// X
+        p0_buildings[factory_id][1] + p0_buildings[factory_id][3] / 2,// Y
+        0,// Selected?
+        p0_buildings[factory_id][6] != null ?
+            p0_buildings[factory_id][6] :
+            p0_buildings[0][0],// Destination X
+        p0_buildings[factory_id][7] != null ?
+            p0_buildings[factory_id][7] :
+            p0_buildings[0][1],// Destination Y
+        0,// Weapon reload
+        100,// Health
+        0,// Moving?
     ]);
 }
 
 function build_building(type, building_x, building_y) {
-	sendJSON({
-		'command' : 'build_building',
-		'type' : type,
-		'building_x' : building_x,
-		'building_y' : building_y
-	});
+    sendJSON({
+        'command' : 'build_building',
+        'type' : type,
+        'building_x' : building_x,
+        'building_y' : building_y
+    });
 
-	if (type === 2) {
-		if (money[0] < 250) {
-			return;
-		}
+    if (type === 2) {
+        if (money[0] < 250) {
+            return;
+        }
 
-		money[0] -= 250;
+        money[0] -= 250;
 
-		p0_buildings.push(
-			[
-				building_x,
-				building_y,
-				100,// Width
-				100,// Height
-				1000,// Health
-				0,// Selected
-				building_x + 50,// Destination X
-				building_y + 50,// Destination Y
-				2,// Type
-			]
-		);
+        p0_buildings.push(
+            [
+                building_x,
+                building_y,
+                100,// Width
+                100,// Height
+                1000,// Health
+                0,// Selected
+                building_x + 50,// Destination X
+                building_y + 50,// Destination Y
+                2,// Type
+            ]
+        );
 
-		// Remove fog around buildings.
-		fog_update_building();
-	} else if (type === 3) {
-		
-	} else {
-		if (debug_flag)
-			console.log("Unknown Building Type", type);
-	}
+        // Remove fog around buildings.
+        fog_update_building();
+    } else if (type === 3) {
+        
+    } else {
+        if (debug_flag)
+            console.log("Unknown Building Type", type);
+    }
 }
 
 function fog_update_building() {
@@ -504,14 +504,14 @@ function fog_update_building() {
         if (fog_counter >= 0) {
             do {
                 if (Math.sqrt(Math.pow(p0_buildings[loop_counter][1] -
-									   fog[fog_counter][1] +
-									   settings['level-size'], 2) +
-							  Math.pow(p0_buildings[loop_counter][0] -
-									   fog[fog_counter][0] +
-									   settings['level-size'], 2)) < 390) {
+                                       fog[fog_counter][1] +
+                                       settings['level-size'], 2) +
+                              Math.pow(p0_buildings[loop_counter][0] -
+                                       fog[fog_counter][0] +
+                                       settings['level-size'], 2)) < 390) {
                     fog.splice(
-                      fog_counter,
-                      1
+                        fog_counter,
+                        1
                     );
                 }
             } while(fog_counter--);
@@ -523,8 +523,8 @@ function m(x0, y0, x1, y1) {
     var j0 = Math.abs(x0 - x1);
     var j1 = Math.abs(y0 - y1);
 
-	//if (heavy_debug_flag)
-		//console.log("m(int**4)", x0, y0, x1, y1);
+    //if (heavy_debug_flag)
+    //console.log("m(int**4)", x0, y0, x1, y1);
 
     if (j0 > j1) {
         return [1, j1 / j0];
@@ -535,129 +535,129 @@ function m(x0, y0, x1, y1) {
 }
 
 function in_range(range, x0, y0, x1, y1) {
-	var res = Math.abs(x0 - x1) <= range && Math.abs(y0 - y1) <= range ?
-			true : false;
-	if (heavy_debug_flag) {
-		console.log("!in_range?", x0, y0, x1, y1);
-		console.log("!in_range?", !res);
-	}
-	return res;
+    var res = Math.abs(x0 - x1) <= range && Math.abs(y0 - y1) <= range ?
+            true : false;
+    if (heavy_debug_flag) {
+        console.log("!in_range?", x0, y0, x1, y1);
+        console.log("!in_range?", !res);
+    }
+    return res;
 }
 
 function distance(u1, u2) {
-	return Math.sqrt(Math.pow(u1[0] - u2[0], 2) +
-					 Math.pow(u1[1] - u2[1], 2));
+    return Math.sqrt(Math.pow(u1[0] - u2[0], 2) +
+                     Math.pow(u1[1] - u2[1], 2));
 }
 
 function keep_distance(u1, u2) {
-	//console.log('random_walk called');
-	//console.log(u2[0] - u1[0]);
-	//console.log(u2[1] - u1[1]);
-	var rand1 = Math.random();
-	var rand2 = Math.random();
-	// 2 * rand1 and 2 * rand2 is to seperate units
-	// that have exactly the same (x,y)   
+    //console.log('random_walk called');
+    //console.log(u2[0] - u1[0]);
+    //console.log(u2[1] - u1[1]);
+    var rand1 = Math.random();
+    var rand2 = Math.random();
+    // 2 * rand1 and 2 * rand2 is to seperate units
+    // that have exactly the same (x,y)   
     // you can try using one random number instead of two
-	// it's hard to describe
-	u1[3] = Math.round(u1[3] - 0.7 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
-	u1[4] = Math.round(u1[4] - 0.7 * rand1 * (u2[1] - u1[1] + 2 * rand2));
+    // it's hard to describe
+    u1[3] = Math.round(u1[3] - 0.7 * rand2 * (u2[0] - u1[0] + 2 * rand1)); 
+    u1[4] = Math.round(u1[4] - 0.7 * rand1 * (u2[1] - u1[1] + 2 * rand2));
 }
 
 //function set_destitation(type,
-						 //index,
-						 //dest_x, dest_y) {
+//index,
+//dest_x, dest_y) {
 function set_destination(dest_x, dest_y) {
-	// index of destination: 3,4 for units; 6,7 for buildings
-	sendJSON({
-		'command' : 'set_destination',
-		'dest_x' : dest_x,
-		'dest_y' : dest_y
-	});
-	return;
+    // index of destination: 3,4 for units; 6,7 for buildings
+    sendJSON({
+        'command' : 'set_destination',
+        'dest_x' : dest_x,
+        'dest_y' : dest_y
+    });
+    return;
 
-	var index;
-	if (selected_type === 0) {
-		for (index = 0; index < p0_units.length; index += 1) {
-			if (debug_flag)
-				console.log("setting destination for unit:",
-							index);
-			if (p0_units[index][2]) {
-				p0_units[index][3] = dest_x;
-				p0_units[index][4] = dest_y;
-			}
-		}
-	} else if (selected_type > 1) {
-		for (index = 0; index < p0_buildings.length; index += 1) {
-			if (debug_flag)
-				console.log("setting destination for building:",
-							index);
-			if (p0_buildings[index][5]) {
-				p0_buildings[index][6] = dest_x;
-				p0_buildings[index][7] = dest_y;
-			}
-		}
-	}
+    var index;
+    if (selected_type === 0) {
+        for (index = 0; index < p0_units.length; index += 1) {
+            if (debug_flag)
+                console.log("setting destination for unit:",
+                            index);
+            if (p0_units[index][2]) {
+                p0_units[index][3] = dest_x;
+                p0_units[index][4] = dest_y;
+            }
+        }
+    } else if (selected_type > 1) {
+        for (index = 0; index < p0_buildings.length; index += 1) {
+            if (debug_flag)
+                console.log("setting destination for building:",
+                            index);
+            if (p0_buildings[index][5]) {
+                p0_buildings[index][6] = dest_x;
+                p0_buildings[index][7] = dest_y;
+            }
+        }
+    }
 }
 
 function select(type, selected_things) {
-	sendJSON({
-		'command' : 'select',
-		'type' : type,
-		'selected_things' : selected_things
-	});
-	return;
+    sendJSON({
+        'command' : 'select',
+        'type' : type,
+        'selected_things' : selected_things
+    });
+    return;
 
-	var index;
-	console.log("selecting...", selected_things);
-	if (type >= 0) {
-		for (index = 0; index < p0_units.length; index += 1) {
-			if (selected_things['units'][index])
-				p0_units[index][2] = 1;
-			else
-				p0_units[index][2] = 0;
-		}
-		for (index = 0; index < p0_buildings.length; index += 1) {
-			if (selected_things['buildings'][index])
-				p0_buildings[index][5] = 1;
-			else
-				p0_buildings[index][5] = 0;
-		}
-	} else if (type === -1) {
-		for (index = 0; index < p0_units.length; index += 1) {
-			p0_units[index][2] = 0;
-		}
-		for (index = 0; index < p0_buildings.length; index += 1) {
-			p0_buildings[index][5] = 0;
-		}
-	} else {
-		console.log("unknown type:", type);
-	}
+    var index;
+    console.log("selecting...", selected_things);
+    if (type >= 0) {
+        for (index = 0; index < p0_units.length; index += 1) {
+            if (selected_things['units'][index])
+                p0_units[index][2] = 1;
+            else
+                p0_units[index][2] = 0;
+        }
+        for (index = 0; index < p0_buildings.length; index += 1) {
+            if (selected_things['buildings'][index])
+                p0_buildings[index][5] = 1;
+            else
+                p0_buildings[index][5] = 0;
+        }
+    } else if (type === -1) {
+        for (index = 0; index < p0_units.length; index += 1) {
+            p0_units[index][2] = 0;
+        }
+        for (index = 0; index < p0_buildings.length; index += 1) {
+            p0_buildings[index][5] = 0;
+        }
+    } else {
+        console.log("unknown type:", type);
+    }
 }
 
 function ready_to_init() {
-	sendJSON({
-		'command' : 'new_game',
-		'settings' : {
-			'level-size' : settings['level-size'],
-			'fog-of-war' : settings['fog-of-war'],
-			'mode' : mode
-		}
-	});
+    sendJSON({
+        'command' : 'new_game',
+        'settings' : {
+            'level-size' : settings['level-size'],
+            'fog-of-war' : settings['fog-of-war'],
+            'mode' : mode
+        }
+    });
 }
 
 function world_init(init_settings) {
 
-	win_or_lose_flag = false;
+    win_or_lose_flag = false;
 
-	money = [
+    money = [
         3000,
         5000,
     ];
 
     world_static = [
         [
-				-settings['level-size'],
-				-settings['level-size'],
+                -settings['level-size'],
+                -settings['level-size'],
             settings['level-size'] * 2,
             settings['level-size'] * 2,
             mode - 1,
@@ -665,29 +665,29 @@ function world_init(init_settings) {
     ];
 
     // Choose random starting locations.
-	camera_x = init_settings['camera_x'];
-	camera_y = init_settings['camera_y'];
-	return;
+    camera_x = init_settings['camera_x'];
+    camera_y = init_settings['camera_y'];
+    return;
 
     // Create player 0 HQ.
     p0_buildings = [
         [
             start_x ?
-				-settings['level-size'] + 25 :
-				settings['level-size'] - 125,// X
+                -settings['level-size'] + 25 :
+                settings['level-size'] - 125,// X
             start_y ?
-				settings['level-size'] - 125 :
-				-settings['level-size'] + 25,// Y
+                settings['level-size'] - 125 :
+                -settings['level-size'] + 25,// Y
             100,// Width
             100,// Height
             1000,// Health
             0,// Selected
             start_x ?
-				-settings['level-size'] + 75 :
-				settings['level-size'] - 75,// Destination X
+                -settings['level-size'] + 75 :
+                settings['level-size'] - 75,// Destination X
             start_y ?
-				settings['level-size'] - 75 :
-				-settings['level-size'] + 75,// Destination Y
+                settings['level-size'] - 75 :
+                -settings['level-size'] + 75,// Destination Y
             1,// Type
         ],
     ];
@@ -696,22 +696,22 @@ function world_init(init_settings) {
     p1_buildings = [
         [
             start_x ?
-				settings['level-size'] - 125 :
-				-settings['level-size'] + 25,// X
+                settings['level-size'] - 125 :
+                -settings['level-size'] + 25,// X
             start_y ?
-				-settings['level-size'] + 25 :
-				settings['level-size'] -125,// Y
+                -settings['level-size'] + 25 :
+                settings['level-size'] -125,// Y
             100,// Width
             100,// Height
             1000,// Health
             1,// Type
         ],[
             start_x ?
-				settings['level-size'] - 250 :
-				-settings['level-size'] + 150,// X
+                settings['level-size'] - 250 :
+                -settings['level-size'] + 150,// X
             start_y ?
-				-settings['level-size'] + 25 :
-				settings['level-size'] -125,// Y
+                -settings['level-size'] + 25 :
+                settings['level-size'] -125,// Y
             100,// Width
             100,// Height
             1000,// Health
@@ -791,27 +791,27 @@ var pi_times_two = Math.PI * 2;
 var x = 0;
 var y = 0;
 var settings = {
-  'audio-volume':
-	window.localStorage.getItem('RTS-2D.htm-audio-volume') === null ?
-		1 :
-		parseFloat(window.localStorage.getItem('RTS-2D.htm-audio-volume')),
-  'camera-keys':
-	window.localStorage.getItem('RTS-2D.htm-camera-keys') === null ?
-		'WASD' :
-		window.localStorage.getItem('RTS-2D.htm-camera-keys'),
-  'fog-of-war': window.localStorage.getItem('RTS-2D.htm-fog-of-war') === null,
-  'level-size':
-	window.localStorage.getItem('RTS-2D.htm-level-size') === null ?
-		1000 :
-		parseFloat(window.localStorage.getItem('RTS-2D.htm-level-size')),
-  'ms-per-frame':
-	window.localStorage.getItem('RTS-2D.htm-ms-per-frame') === null ?
-		25 :
-		parseInt(window.localStorage.getItem('RTS-2D.htm-ms-per-frame')),
-  'scroll-speed':
-	window.localStorage.getItem('RTS-2D.htm-scroll-speed') === null ?
-		10 :
-		parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
+    'audio-volume':
+    window.localStorage.getItem('RTS-2D.htm-audio-volume') === null ?
+        1 :
+        parseFloat(window.localStorage.getItem('RTS-2D.htm-audio-volume')),
+    'camera-keys':
+    window.localStorage.getItem('RTS-2D.htm-camera-keys') === null ?
+        'WASD' :
+        window.localStorage.getItem('RTS-2D.htm-camera-keys'),
+    'fog-of-war': window.localStorage.getItem('RTS-2D.htm-fog-of-war') === null,
+    'level-size':
+    window.localStorage.getItem('RTS-2D.htm-level-size') === null ?
+        1000 :
+        parseFloat(window.localStorage.getItem('RTS-2D.htm-level-size')),
+    'ms-per-frame':
+    window.localStorage.getItem('RTS-2D.htm-ms-per-frame') === null ?
+        25 :
+        parseInt(window.localStorage.getItem('RTS-2D.htm-ms-per-frame')),
+    'scroll-speed':
+    window.localStorage.getItem('RTS-2D.htm-scroll-speed') === null ?
+        10 :
+        parseInt(window.localStorage.getItem('RTS-2D.htm-scroll-speed'))
 };
 
 var money_timer = 0;
@@ -829,7 +829,7 @@ var p0_units = [];
  5  : bullet reload timer
  6  : HP
  7  : is moving or not (true for moving)
-*/
+ */
 var p1_buildings = [];
 var p1_units = [];
 var world_static = [];
