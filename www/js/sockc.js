@@ -1,7 +1,7 @@
 //websocket
 var refresh_count = 0;
 try {
-    var sock = new WebSocket("ws://" + document.URL.slice(7,-1));
+    var sock = new WebSocket("ws://" + document.URL.slice(7,-1) + ":6789");
     //sock.binaryType = 'blob'; // can set it to 'blob' or 'arraybuffer 
     console.log("Websocket - status: " + sock.readyState);
     sock.onopen = function(m) { 

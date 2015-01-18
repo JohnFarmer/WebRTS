@@ -2,7 +2,7 @@
 ### A web-based 2D topdown real-time strategy game.
 
 This repo a fork of [honzi](https://github.com/honzi)'s [iterami/RTS-2D.htm](https://github.com/iterami/RTS-2D.htm). Due to coding style problem, I just created another repo.
- 
+
 Compaired with its parent repo [RTS-2D.htm](https://github.com/iterami/RTS-2D.htm), WebRTS tries to seperate.
 
 ### Install && Run
@@ -24,7 +24,7 @@ or
 $ node app.js
 ~~~
 
-Fire up a modern browser, go to [localhost:1234](http://localhost:1234) and explore the game.
+Fire up a modern browser, go to [localhost:6789](http://localhost:6789) and explore the game.
 
 ### Dirs and Files
 
@@ -57,4 +57,3 @@ Directory tree of repo:
 As the parent repo [RTS-2D.htm](https://github.com/iterami/RTS-2D.htm) is a pure client side program, WebRTS has a __no-server__ branch, which is just the modularized version of [RTS-2D.htm](https://github.com/iterami/RTS-2D.htm).
 
 There is also a __go-server__ branch which using golang, it's not functional right now. Actually the node.js version is just a helper for making the golang version to work.
-

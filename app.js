@@ -14,7 +14,7 @@ app.get(/^\/((?:js|css|img|public)\/.+)$/, function(req ,res) {
 
 var server = require('http').createServer(app);
 
-server.listen(1234);
+server.listen(6789);
 
 var sockserver = require(__dirname + '/sockserver/sock.js');
 sockserver(server);
