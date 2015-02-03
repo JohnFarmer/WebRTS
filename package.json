@@ -5,10 +5,11 @@
 	"main": "app.js",
 	"dependencies" : {
 		"express" : "*",
+		"log4js" : "*",
 		"websocket" : "*"
 	},
 	"scripts": {
-		"test": "node app.js"
+		"start": "node app.js"
 	},
 	"repository": {
 		"type": "git",

@@ -1,0 +1,2 @@
+#!/bin/bash
+npm start | tee $(echo log/$(date +"%Y-%m-%d")-SquareWars.log)

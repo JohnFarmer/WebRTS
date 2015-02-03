@@ -1,4 +1,6 @@
 module.exports = function(http_server) {
+    var log4js = require('log4js');
+    var logger=log4js.getLogger();
     var debug_flag = true;
     var heavy_debug_flag = false;
 
@@ -11,7 +13,7 @@ module.exports = function(http_server) {
 
     wss.on('request', function(request) {
         var conn = request.accept(null, request.origin);
-        console.log("connection accepted", conn['socket']['_peername']);
+        logger.info("connection accepted", conn['socket']['_peername']);
         conn.send("conncection accepted");
         var update_count = 0;
 
@@ -26,15 +28,15 @@ module.exports = function(http_server) {
                 msgJSON = JSON.parse(msg);
                 if (debug_flag)
                     if (heavy_debug_flag || msgJSON['command'] !== "update")
-                        console.log('parsing JSON:', msg);
+                        logger.info('parsing JSON:', msg);
             } catch(e) {
-                console.log(e);
+                logger.warn(e);
             }
             return msgJSON;
         };
 
         var command_log = function(log) {
-            console.log('got command: \t', log);
+            logger.info('got command: \t', log);
         };
 
         conn.on('message', function(message) {
@@ -48,7 +50,7 @@ module.exports = function(http_server) {
                     return;
 
                 if (update_count % 80 === 0) {
-                    console.log('updating... ', update_count);
+                    logger.info('updating... ', update_count);
                     game.print_state();
                 }
                 update_count += 1;
@@ -71,16 +73,16 @@ module.exports = function(http_server) {
                                     msgJSON['building_y']);
             } else if (msgJSON['command'] === "new_game") {
                 command_log(msgJSON['command']);
-                console.log(msgJSON);
+                logger.info(msgJSON);
                 game= new game_core(msgJSON['settings']);
                 sendJSON(game.world_init());
             } else {
-                console.log('unkown command:', msgJSON['command']);
+                logger.info('unkown command:', msgJSON['command']);
             }
         });
 
         conn.on('close', function(connection) {
-            console.log('connection closed:',
+            logger.info('connection closed:',
                         conn['socket']['_peername']);
         });
     });
