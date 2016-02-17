@@ -10,9 +10,10 @@ Compaired with its parent repo [RTS-2D.htm](https://github.com/iterami/RTS-2D.ht
 The master branch is currently using Node.js as server(both the file server which serves the html/css/js files, and socket server handle the game logic). A 0.10.x should be able to work.
 
 To install
-~~~
+~~~ bash
 $ cd path/to/WebRTS
 $ npm install
+##### currently master branch brokes, use node-server branch
 ~~~
 
 To run
@@ -24,7 +25,7 @@ or
 $ node app.js
 ~~~
 
-Fire up a modern browser, go to [localhost:6789](http://localhost:6789) and explore the game.
+Fire up a modern browser, go to [localhost:1234](http://localhost:1234) and explore the game.
 
 ### Dirs and Files
 
